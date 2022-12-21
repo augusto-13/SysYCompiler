@@ -1,0 +1,185 @@
+--------------------------------------------------------------------------
+PART I: Parsing
+--------------------------------------------------------------------------
+
+<1> 1. compileUnit层
+CompUnit → {Decl} {FuncDef} MainFuncDef
+    Decl → ConstDecl  | VarDecl
+	FuncDef → FuncType Ident '('  [FuncFParams]  ')' Block
+    MainFuncDef →  'int'  'main'  '('  ')' Block 
+
+<2> 1-1. Decl层
+Decl → ConstDecl  | VarDecl
+    ConstDecl →  'const' 'int' ConstDef {  ',' ConstDef }  ';' 
+    VarDecl → 'int' VarDef {  ',' VarDef }  ';'
+
+<3> 1-2. MainFuncDef层
+MainFuncDef →  'int'  'main'  '('  ')' Block 
+    Block →  '{' { BlockItem } '}'
+
+<4> 1-3. FuncDef层
+FuncDef → FuncType Ident '('  [FuncFParams]  ')' Block
+
+--------------------------------------------------------------------------
+
+<5> 1-1-1. ConstDecl层
+ConstDecl →  'const' 'int' ConstDef {  ',' ConstDef }  ';' 
+
+<6> 1-1-2. VarDecl层
+VarDecl → 'int' VarDef {  ',' VarDef }  ';'
+
+<7> 1-2-1. Block
+Block →  '{' { BlockItem } '}'
+
+<8> 1-3-1. FuncType
+FuncType →  'void'  |  'int'
+
+<9> 1-3-2. FuncFParams
+FuncFParams → FuncFParam {  ',' FuncFParam }
+    FuncFParam → 'int' Ident  ['['  ']' {  '[' ConstExp  ']' }]
+
+--------------------------------------------------------------------------
+
+<10> 1-1-1-1. ConstDef
+ConstDef → Ident { '[' ConstExp ']' }  '=' ConstInitVal
+
+<11> 1-1-2-1. VarDef
+VarDef → Ident {  '[' ConstExp  ']' }
+       | Ident {  '[' ConstExp  ']' }  '=' InitVal
+
+<12> 1-2-1-1. BlockItem
+BlockItem → Decl | Stmt
+    Decl → ConstDecl  | VarDecl
+        ConstDecl →  'const' 'int' ConstDef {  ',' ConstDef }  ';' 
+        VarDecl → 'int' VarDef {  ',' VarDef }  ';'
+    Stmt →	LVal '=' Exp ';'
+         |	LVal  '='  'getint''('')'';' 
+         |	Exp ';'
+         |  Block
+     	 |  'if' '(' Cond ')' Stmt [ 'else' Stmt ]
+     	 |  'while' '(' Cond  ')' Stmt
+     	 |  'break' ';'
+     	 |  'continue'  ';'
+     	 |  'return'  [Exp]  ';'
+     	 |	';'
+     	 |  'printf' '(' FormatString {','Exp} ')' ';'
+
+<13> 1-3-2-1. FuncFParam
+FuncFParam → 'int' Ident  ['['  ']' {  '[' ConstExp ']' }]
+
+--------------------------------------------------------------------------
+
+<14> 1-1-1-1-1. ConstExp
+ConstExp -> AddExp
+
+<15> 1-1-1-1-2. ConstInitVal
+ConstInitVal → ConstExp  
+             |  '{' [ ConstInitVal {  ',' ConstInitVal } ]  '}'
+
+<16> 1-1-2-1-1. InitVal
+InitVal →  Exp
+        |  '{' [ InitVal {',' InitVal} ] '}'
+
+<17> 1-2-1-1-1. Stmt
+Stmt →	LVal '=' Exp ';'
+     |	LVal  '='  'getint''('')'';' 
+     |	Exp ';'
+     |  Block
+     |  'if' '(' Cond ')' Stmt [ 'else' Stmt ]
+     |  'while' '(' Cond  ')' Stmt
+     |  'break' ';'
+     |  'continue'  ';'
+     |  'return'  [Exp]  ';'
+     |	';'
+     |  'printf' '(' FormatString {','Exp} ')' ';'
+
+    LVal → Ident {'[' Exp ']'}
+    Exp -> AddExp
+        AddExp → MulExp  | AddExp ('+'  |  '−') MulExp // 左递归，需改写 --- <A>
+        AddExp → MulExp {('+' | '−') MulExp}
+            MulExp → UnaryExp  | MulExp ('*'  |  '/'  |  '% ') UnaryExp // 左递归，需改写 --- <B>
+            MulExp → UnaryExp {('*'|'/'|'%') UnaryExp}
+                UnaryExp → PrimaryExp
+                         | Ident '(' [FuncRParams] ')'
+                         | UnaryOp UnaryExp
+                    PrimaryExp  → '(' Exp ')' | LVal | Number
+                    UnaryOp →  '+'  |  '−'  |  '!'
+
+--------------------------------------------------------------------------
+语法树的树干以及粗枝已处理完毕，接下来的细枝与叶子不再做层级编号处理
+
+<18> 5-1. AddExp
+AddExp → MulExp  | AddExp ('+'  |  '−') MulExp // 左递归，需改写 --- <A>
+AddExp → MulExp {('+' | '−') MulExp}
+
+<19> 1-1-2-1-1-1. Exp
+Exp -> AddExp
+    AddExp → MulExp  | AddExp ('+'  |  '−') MulExp // 左递归，需改写 --- <A>
+    AddExp → MulExp {('+' | '−') MulExp}
+        MulExp → UnaryExp  | MulExp ('*'  |  '/'  |  '% ') UnaryExp // 左递归，需改写 --- <B>
+        MulExp → UnaryExp {('*'|'/'|'%') UnaryExp}
+            UnaryExp → PrimaryExp
+                     | Ident '(' [FuncRParams] ')'
+                     | UnaryOp UnaryExp
+                PrimaryExp  → '(' Exp ')' | LVal | Number
+                UnaryOp →  '+'  |  '−'  |  '!'
+
+<20> 1-2-1-1-1-1. LVal
+LVal → Ident {'[' Exp ']'}
+
+<21> 1-2-1-1-1-2. Cond
+Cond → LOrExp
+    LOrExp → LAndExp  | LOrExp  '||' LAndExp
+		LAndExp → EqExp  | LAndExp  '&& ' EqExp 
+			EqExp → RelExp  | EqExp ('==' | '!=') RelExp
+				RelExp → AddExp  | RelExp ('<'  |  '>'  |  '<='  |  '>=') AddExp
+
+--------------------------------------------------------------------------
+[1] Exp系列剩余部分
+
+<22> MulExp
+MulExp → UnaryExp  | MulExp ('*'  |  '/'  |  '% ') UnaryExp // 左递归，需改写 --- <B>
+MulExp → UnaryExp {('*'|'/'|'%') UnaryExp}
+
+<23> UnaryExp
+UnaryExp → PrimaryExp
+            // Ident '('
+         | Ident '(' [FuncRParams] ')'
+            // '+'  |  '−'  |  '!'
+         | UnaryOp UnaryExp
+    PrimaryExp  → '(' Exp ')' | LVal | Number
+    UnaryOp →  '+'  |  '−'  |  '!'
+
+<24> PrimaryExp
+PrimaryExp  → '(' Exp ')' | LVal | Number
+
+<25> FuncRParams
+FuncRParams → Exp {  ',' Exp }
+
+<30> UnaryOp
+UnaryOp →  '+'  |  '−'  |  '!'
+
+--------------------------------------------------------------------------
+[2] Cond系列剩余部分
+
+<26> LOrExp
+LOrExp → LAndExp  | LOrExp  '||' LAndExp // 左递归，需改写 --- <C>
+LOrExp → LAndExp  { '||' LAndExp }
+																				
+<27> LAndExp
+LAndExp → EqExp  | LAndExp  '&& ' EqExp // 左递归，需改写 --- <D>
+LAndExp → EqExp { '&& ' EqExp }
+
+<28> EqExp
+EqExp →  RelExp  | EqExp  ('==' | '!=') RelExp // 左递归，需改写 --- <E>
+EqExp →  RelExp { ('==' | '!=') RelExp }
+
+<29> RelExp
+RelExp → AddExp | RelExp ('<'  |  '>'  |  '<='  |  '>=') AddExp // 左递归，需改写 --- <F>
+RelExp → AddExp { ('<'  |  '>'  |  '<='  |  '>=') AddExp }
+
+--------------------------------------------------------------------------
+
+<31> Number
+Number → IntConst
+

@@ -1,0 +1,80 @@
+--------------------------------------------------------------------------
+PART II: Semantic Analysis
+--------------------------------------------------------------------------
+
+CompUnit → {Decl} {FuncDef} MainFuncDef
+
+Decl → ConstDecl | VarDecl
+
+MainFuncDef →  'int'  'main'  '('  ')' Block
+
+FuncDef → FuncType Ident '(' [FuncFParams] ')' Block
+
+ConstDecl →  'const' 'int' ConstDef {  ',' ConstDef }  ';'
+
+VarDecl → 'int' VarDef {  ',' VarDef }  ';'
+
+Block →  '{' { BlockItem } '}'
+
+FuncType →  'void'  |  'int'
+
+FuncFParams → FuncFParam {  ',' FuncFParam }
+
+ConstDef → Ident { '[' ConstExp ']' }  '=' ConstInitVal
+
+VarDef → Ident {  '[' ConstExp  ']' } | Ident {  '[' ConstExp  ']' }  '=' InitVal
+
+BlockItem → Decl | Stmt
+
+FuncFParam → 'int' Ident  ['['  ']' {  '[' ConstExp ']' }]
+
+ConstExp -> AddExp
+
+ConstInitVal → ConstExp
+             |  '{' [ ConstInitVal {  ',' ConstInitVal } ]  '}'
+
+InitVal →  Exp
+        |  '{' [ InitVal {',' InitVal} ] '}'
+
+Stmt →	LVal '=' Exp ';'
+     |	LVal  '='  'getint''('')'';'
+     |	Exp ';'
+     |  Block
+     |  'if' '(' Cond ')' Stmt [ 'else' Stmt ]
+     |  'while' '(' Cond  ')' Stmt
+     |  'break' ';'
+     |  'continue'  ';'
+     |  'return'  [Exp]  ';'
+     |	';'
+     |  'printf' '(' FormatString {','Exp} ')' ';'
+
+AddExp → MulExp  | AddExp ('+'  |  '−') MulExp
+
+Exp -> AddExp
+
+LVal → Ident {'[' Exp ']'}
+
+Cond → LOrExp
+
+MulExp → UnaryExp  | MulExp ('*'  |  '/'  |  '% ') UnaryExp
+
+UnaryExp → PrimaryExp
+         | Ident '(' [FuncRParams] ')'
+         | UnaryOp UnaryExp
+
+PrimaryExp  → '(' Exp ')' | LVal | Number
+
+FuncRParams → Exp {  ',' Exp }
+
+UnaryOp →  '+'  |  '−'  |  '!'
+// ‘!’ 只出现在条件表达式中
+
+LOrExp → LAndExp  | LOrExp  '||' LAndExp
+
+LAndExp → EqExp  | LAndExp  '&& ' EqExp
+
+EqExp →  RelExp  | EqExp  ('==' | '!=') RelExp
+
+RelExp → AddExp | RelExp ('<'  |  '>'  |  '<='  |  '>=') AddExp
+
+Number → IntConst
