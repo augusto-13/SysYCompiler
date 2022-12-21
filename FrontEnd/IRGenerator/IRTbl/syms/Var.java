@@ -1,6 +1,7 @@
 package FrontEnd.IRGenerator.IRTbl.syms;
 
 import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
+import com.sun.javafx.scene.control.skin.IntegerFieldSkin;
 
 import java.util.ArrayList;
 
@@ -30,9 +31,10 @@ public class Var extends Sym {
     int const_value;
     final ArrayList<Integer> const_value_arr = new ArrayList<>();
 
-    // global init
-    int global_initVal;
-    boolean global_init;
+    // global
+    boolean isGlobal;
+    int g_init_val;
+    final ArrayList<Integer> g_init_arr = new ArrayList<>();
 
     // !isConst & init
     Var init_value;
@@ -69,6 +71,15 @@ public class Var extends Sym {
             this.init_value_arr.addAll(value_arr);
             this.init = true;
         }
+        if (type.equals("global")) {
+            this.name = name;
+            this.isGlobal = true;
+            this.dim = dim;
+            this.d1 = d1;
+            this.d2 = d2;
+            this.g_init_arr.addAll(value_arr);
+            this.init = true;
+        }
     }
 
     // 2.
@@ -79,6 +90,13 @@ public class Var extends Sym {
             this.isConst = true;
             this.dim = 0;
             this.const_value = value;
+            this.init = true;
+        }
+        if (type.equals("global")) {
+            this.name = name;
+            this.isGlobal = true;
+            this.dim = 0;
+            this.g_init_val = value;
             this.init = true;
         }
     }
@@ -218,7 +236,7 @@ public class Var extends Sym {
     }
 
     public int getConst_value() {
-        return isConst ? const_value : global_init ? global_initVal : null;
+        return const_value;
     }
 
     public Var getInit_value() {
@@ -241,10 +259,6 @@ public class Var extends Sym {
         return isFParam;
     }
 
-    public boolean getInit() {
-        return init;
-    }
-
     public boolean isTemp() {
         return name.equals("temp");
     }
@@ -257,4 +271,13 @@ public class Var extends Sym {
             return new LVal(name, index.getName());
         }
     }
+
+    public int getValidInitVal() {
+        return isConst ? const_value : g_init_val;
+    }
+
+    public ArrayList<Integer> getValidInitArr() {
+        return isConst ? const_value_arr : g_init_arr;
+    }
+
 }
