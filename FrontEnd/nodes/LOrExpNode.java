@@ -3,7 +3,7 @@ package FrontEnd.nodes;
 import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.Quadruple._12_Label_Q;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class LOrExpNode extends Node {
     public LOrExpNode() {}
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         // 有问题：
         // LOrExpNode内的genIR应该只处理逻辑关系
         // 也就是说，我只需要为其传入“跳转至标签”的继承属性
@@ -47,10 +47,10 @@ public class LOrExpNode extends Node {
 //            String prev_bnz_label = IRContext.bnz_label;
 //            String end_label = IRGenerator.genLabel();
 //            IRContext.bnz_label = end_label;
-//            Var orV = (Var) children.get(0).genIR();
+//            Var orV = children.get(0).genIR();
 //            if (orV.isConst()) {
 //                if (orV.getConst_value() == 0) {
-//                    Var andV = (Var) children.get(2).genIR();
+//                    Var andV = children.get(2).genIR();
 //                    if (andV.isConst()) {
 //                        if (andV.getConst_value() == 0) {
 //                            IRCodes.addIRCode_ori(new _13_Jump_Q("goto", IRContext.bez_label));
@@ -66,7 +66,7 @@ public class LOrExpNode extends Node {
 //            }
 //            else {
 //                IRCodes.addIRCode_ori(new _13_Jump_Q("bnz", orV.getName(), end_label));
-//                Var andV = (Var) children.get(2).genIR();
+//                Var andV = children.get(2).genIR();
 //                if (andV.isConst()) {
 //                    if (andV.getConst_value() == 0) {
 //                        IRCodes.addIRCode_ori(new _13_Jump_Q("goto", IRContext.bez_label));

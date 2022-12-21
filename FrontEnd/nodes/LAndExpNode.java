@@ -3,7 +3,7 @@ package FrontEnd.nodes;
 import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.Quadruple._12_Label_Q;
 import FrontEnd.IRGenerator.Quadruple._13_Jump_Q;
@@ -14,7 +14,7 @@ public class LAndExpNode extends Node {
     public LAndExpNode() {}
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         // LAndExp  →  EqExp  |
         //             LAndExp  '&&'  EqExp
         ArrayList<Node> children = getChildren();
@@ -23,7 +23,7 @@ public class LAndExpNode extends Node {
         String prev_if_label = IRContext.if_label;
         if (size == 1) {
             // LAndExp  →  EqExp
-            Var eqExpV = (Var) children.get(0).genIR();
+            Var eqExpV = children.get(0).genIR();
             if (eqExpV.isConst()) {
                 int val = eqExpV.getConst_value();
                 if (IRContext.jump_if && val != 0) {

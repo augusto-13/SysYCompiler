@@ -6,7 +6,7 @@ import FrontEnd.IRGenerator.IRTbl.IRTbl;
 import FrontEnd.IRGenerator.Quadruple.Elements.Param;
 import FrontEnd.IRGenerator.Quadruple._9_FuncDecl_Q;
 import FrontEnd.IRGenerator.Quadruple._12_Label_Q;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
@@ -66,7 +66,7 @@ public class FuncDefNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         //
         // FuncDef → FuncType Ident '(' [FuncFParams] ')' Block
         //
@@ -103,6 +103,7 @@ public class FuncDefNode extends Node {
         IRTbl.newFrame(IRTbl.FRAME_FUNC_DEF_BLOCK, funcName);
         children.get(children.size() - 1).genIR();
         IRCodes.addIRCode_ori(new _12_Label_Q(String.format("func_def_block_%s_end", funcName)));
+        IRTbl.removeCurrFrame();
         // IRContext.block_in_func_def = false;
         return null;
     }

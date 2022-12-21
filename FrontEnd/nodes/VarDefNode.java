@@ -8,7 +8,7 @@ import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
 import FrontEnd.IRGenerator.Quadruple._1_VarDecl_Q;
 import FrontEnd.IRGenerator.Quadruple._2_ArrDecl_Q;
 import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
@@ -26,9 +26,9 @@ public class VarDefNode extends Node {
         ArrayList<Node> children = getChildren();
         String name = ((LeafNode) children.get(0)).getContent();
         int dim = (children.size() % 3 == 0) ? ((children.size() - 3) / 3) : ((children.size() - 1) / 3);
-        int type  =  (dim == 0) ? SymbolInfo.INT :
-                     (dim == 1) ? SymbolInfo.ARRAY_1D :
-                     (dim == 2) ? SymbolInfo.ARRAY_2D : SymbolInfo.UNKNOWN;
+        int type = (dim == 0) ? SymbolInfo.INT :
+                (dim == 1) ? SymbolInfo.ARRAY_1D :
+                        (dim == 2) ? SymbolInfo.ARRAY_2D : SymbolInfo.UNKNOWN;
         // 1. checkError()
         if (Context.checkRedefineError(name)) {
             Context.addError(new ErrorPair
@@ -44,7 +44,7 @@ public class VarDefNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         /* 有bug，暂时忽略 */
         ArrayList<Node> children = getChildren();
         int size = children.size();
@@ -64,7 +64,7 @@ public class VarDefNode extends Node {
         }
         if (size == 3) {
             // VarDef -> Ident '=' InitVal
-            Var initValV = (Var) children.get(2).genIR();
+            Var initValV = children.get(2).genIR();
             if (IRContext.global_decl) {
                 var = new Var("global", ident_, initValV.getValidInitVal());
                 IRCodes.addIRCode_ori(new _1_VarDecl_Q(ident_, initValV.getValidInitVal()));
@@ -80,7 +80,7 @@ public class VarDefNode extends Node {
         }
         if (size == 4) {
             // VarDef -> Ident '[' ConstExp ']'
-            int d1_lenV = ((Var) children.get(2).genIR()).getConst_value();
+            int d1_lenV = (children.get(2).genIR()).getConst_value();
             if (IRContext.global_decl) {
                 ArrayList<Integer> initArr = new ArrayList<>();
                 for (int i = 0; i < d1_lenV; i++) initArr.add(0);
@@ -94,13 +94,12 @@ public class VarDefNode extends Node {
         }
         if (size == 6) {
             // VarDef -> Ident '[' ConstExp ']' '=' InitVal
-            int d1_lenV = ((Var) children.get(2).genIR()).getConst_value();
-            Var initValV = (Var) children.get(5).genIR();
+            int d1_lenV = (children.get(2).genIR()).getConst_value();
+            Var initValV = children.get(5).genIR();
             if (IRContext.global_decl) {
                 var = new Var("global", ident_, 1, d1_lenV, 0, initValV.getValidInitArr());
                 IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV, initValV.getValidInitArr()));
-            }
-            else {
+            } else {
                 ArrayList<Var> value_arr = initValV.getInit_value_arr();
                 var = new Var("var", ident_, 1, d1_lenV, 0, value_arr);
                 IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV));
@@ -116,8 +115,8 @@ public class VarDefNode extends Node {
         }
         if (size == 7) {
             // VarDef -> Ident '[' ConstExp ']' '[' 'ConstExp' ']'
-            int d1_lenV = ((Var) children.get(2).genIR()).getConst_value();
-            int d2_lenV = ((Var) children.get(5).genIR()).getConst_value();
+            int d1_lenV = (children.get(2).genIR()).getConst_value();
+            int d2_lenV = (children.get(5).genIR()).getConst_value();
             if (IRContext.global_decl) {
                 ArrayList<Integer> initValArr = new ArrayList<>();
                 for (int i = 0; i < d1_lenV * d2_lenV; i++) initValArr.add(0);
@@ -130,9 +129,9 @@ public class VarDefNode extends Node {
         }
         if (size == 9) {
             // VarDef -> Ident '[' ConstExp ']' '[' 'ConstExp' ']' '=' InitVal
-            int d1_lenV = ((Var) children.get(2).genIR()).getConst_value();
-            int d2_lenV = ((Var) children.get(5).genIR()).getConst_value();
-            Var initValV = (Var) children.get(8).genIR();
+            int d1_lenV = (children.get(2).genIR()).getConst_value();
+            int d2_lenV = (children.get(5).genIR()).getConst_value();
+            Var initValV = children.get(8).genIR();
             if (IRContext.global_decl) {
                 var = new Var("global", ident_, 2, d1_lenV, d2_lenV, initValV.getValidInitArr());
                 IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV * d2_lenV, initValV.getValidInitArr()));

@@ -2,7 +2,7 @@ package FrontEnd.nodes;
 
 import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRGenerator;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
 
@@ -13,7 +13,7 @@ public class EqExpNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         // EqExp  →  RelExp
         //        |  EqExp  ('==' | '!=')  RelExp
         ArrayList<Node> children = getChildren();
@@ -24,8 +24,8 @@ public class EqExpNode extends Node {
         }
         else if (size == 3) {
             // EqExp  →  EqExp  ('==' | '!=')  RelExp
-            Var eqV = (Var) children.get(0).genIR();
-            Var relV = (Var) children.get(2).genIR();
+            Var eqV = children.get(0).genIR();
+            Var relV = children.get(2).genIR();
             String op = ((LeafNode) children.get(1)).getContent();
             if (eqV.isConst() && relV.isConst()) {
                 int sub = eqV.getConst_value() - relV.getConst_value();

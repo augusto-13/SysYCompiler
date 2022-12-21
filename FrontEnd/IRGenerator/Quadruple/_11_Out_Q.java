@@ -2,15 +2,13 @@ package FrontEnd.IRGenerator.Quadruple;
 
 import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRGenerator;
-import FrontEnd.IRGenerator.IRTbl.syms.Str;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
+import FrontEnd.IRGenerator.Quadruple.Elements.PrintElem;
 
 import java.util.ArrayList;
 
 public class _11_Out_Q extends IRCode{
-    ArrayList<Str> str_defs = new ArrayList<>();
-    ArrayList<Sym> outs = new ArrayList<>();
+    ArrayList<PrintElem> outs = new ArrayList<>();
 
     // str: without ""
     public _11_Out_Q(String str, ArrayList<Var> args) {
@@ -18,23 +16,29 @@ public class _11_Out_Q extends IRCode{
         for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) == '%' && str.charAt(i + 1) == 'd') {
                 if (start != i) {
-                    Str str_sym = new Str(String.format("str_%d", ++IRGenerator.str_num), str.substring(start, i));
-                    IRCodes.addStrQ(new _14_Str_Q(str_sym));
-                    outs.add(str_sym);
+                    String name = String.format("str_%d", ++IRGenerator.str_num);
+                    String content = str.substring(start, i);
+                    IRCodes.addIRCode_ori(new _14_StrDecl_Q(name, content));
+                    outs.add(new PrintElem(name));
                 }
-                outs.add(args.get(arg_i++));
+                outs.add(new PrintElem(args.get(arg_i++)));
                 start = i + 2;
                 i++;
             }
         }
-        if (start != str.length()) outs.add(new Str(String.format("str_%d", ++IRGenerator.str_num), str.substring(start)));
+        if (start != str.length()) {
+            String name = String.format("str_%d", ++IRGenerator.str_num);
+            String content = str.substring(start);
+            IRCodes.addIRCode_ori(new _14_StrDecl_Q(name, content));
+            outs.add(new PrintElem(name));
+        }
     }
 
 
     @Override
     public String toString() {
         StringBuilder ret = new StringBuilder();
-        for (Sym out : outs) {
+        for (PrintElem out : outs) {
             ret.append(String.format("printf %s\n", out));
         }
         return ret.toString();

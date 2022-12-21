@@ -6,7 +6,7 @@ import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
 import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class AddExpNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         // AddExp → MulExp
         //        | AddExp ('+' | '−') MulExp
         ArrayList<Node> children = getChildren();
@@ -24,8 +24,8 @@ public class AddExpNode extends Node {
         if (size == 1) return children.get(0).genIR();
         Node addN = children.get(0);
         Node mulN = children.get(2);
-        Var addV = (Var) addN.genIR();
-        Var mulV = (Var) mulN.genIR();
+        Var addV = addN.genIR();
+        Var mulV = mulN.genIR();
         String op = ((LeafNode) children.get(1)).getContent();
         // addIRCodes
         if (IRContext.global_decl) {

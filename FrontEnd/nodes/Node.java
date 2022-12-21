@@ -1,6 +1,6 @@
 package FrontEnd.nodes;
 
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.lexer.*;
 
 import java.io.File;
@@ -69,7 +69,7 @@ public abstract class Node {
         }
     }
 
-    public Sym genIR() {
+    public Var genIR() {
         for (Node child : getChildren()) {
             child.genIR();
         }

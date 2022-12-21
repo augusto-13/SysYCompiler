@@ -1,10 +1,12 @@
 package FrontEnd.nodes;
 
+import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRTbl.IRTbl;
 import FrontEnd.IRGenerator.IRTbl.Var_tbl;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
+import FrontEnd.IRGenerator.Quadruple._2_ArrDecl_Q;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
 import FrontEnd.errorChecker.ErrorPair;
@@ -40,7 +42,7 @@ public class ConstDefNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         // ConstDef → Ident { '[' ConstExp ']' } '=' ConstInitVal
         ArrayList<Node> children = getChildren();
         int size = children.size();
@@ -48,13 +50,16 @@ public class ConstDefNode extends Node {
         LeafNode identNode = (LeafNode) children.get(0);
         String ident = identNode.getContent();
         ident = (IRContext.global_decl)? "@" + ident : "%" + ident;
-        Var const_init_value = (Var) children.get(size - 1).genIR();
+        Var const_init_value = children.get(size - 1).genIR();
         assert const_init_value.isConst();
         Var constVar;
         if (dim == 0) constVar = new Var("const", ident, const_init_value.getConst_value());
         else {
             ArrayList<Integer> value_arr = const_init_value.getConst_value_arr();
-            constVar = new Var("const", ident, dim, const_init_value.getD1(), const_init_value.getD2(), value_arr);
+            int d1 = const_init_value.getD1();
+            int d2 = const_init_value.getD2();
+            constVar = new Var("const", ident, dim, d1, d2, value_arr);
+            IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident, d2 == 0 ? d1 : d1 * d2, value_arr));
         }
         // 填表
         IRTbl.addEntry(new Var_tbl(identNode.getContent(), constVar));

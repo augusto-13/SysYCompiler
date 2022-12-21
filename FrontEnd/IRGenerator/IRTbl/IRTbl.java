@@ -18,13 +18,18 @@ public class IRTbl {
         stack_of_frames.push(new Frame_tbl(type, name));
     }
 
-    public static void addEntry(Entry_tbl e) {stack_of_frames.peek().addEntry(e);}
+    public static void addEntry(Entry_tbl e) {
+        stack_of_frames.peek().addEntry(e);
+    }
 
-    public static void addEntryToGlobalFrame(Entry_tbl e) {stack_of_frames.get(0).addEntry(e);}
+    public static void addEntryToGlobalFrame(Entry_tbl e) {
+        stack_of_frames.get(0).addEntry(e);
+    }
 
     public static void removeCurrFrame() {
-        if (stack_of_frames.peek().getType() == FRAME_BLOCK)
-        stack_of_frames.pop();
+        int type = stack_of_frames.peek().getType();
+        if (type == FRAME_BLOCK || type == FRAME_FUNC_DEF_BLOCK)
+            stack_of_frames.pop();
         else System.out.println("You seem to have removed a frame that you're not supposed to operate on.");
     }
 
@@ -42,26 +47,13 @@ public class IRTbl {
 //    }
 
     public static Var findVar(String name) {
-        if (stack_of_frames.peek().getType() == FRAME_FUNC_DEF_BLOCK) {
-            // FRAME_FUNC_DEF中查找Var
-            // 遍历当前Func与Global两个Frame即可
-            Entry_tbl entry = findInCurrFrame(name);
-            if (entry != null) return ((Var_tbl) entry).getVar();
-            entry = findInGlobalFrame(name);
-            if (entry != null) return ((Var_tbl) entry).getVar();
-            return null;
+        for (int i = stack_of_frames.size() - 1; i >= 1; i--) {
+            Frame_tbl frame = stack_of_frames.get(i);
+            if (frame.findName(name) != null)
+                return ((Var_tbl) frame.findName(name)).getVar();
         }
-        else {
-            // FRAME_BLOCK与FRAME_MAIN中查找Var
-            // 从后往前遍历GLOBAL, FUNC_DEF后的[MAIN与BLOCKs]
-            for (int i = stack_of_frames.size() - 1; i >= 1; i--) {
-                Frame_tbl frame = stack_of_frames.get(i);
-                if (frame.getType() == FRAME_FUNC_DEF_BLOCK) break;
-                if (frame.findName(name) != null)
-                    return ((Var_tbl) frame.findName(name)).getVar();
-            }
-            return ((Var_tbl) findInGlobalFrame(name)).getVar();
-        }
+        return ((Var_tbl) findInGlobalFrame(name)).getVar();
+
     }
 
     public static Func_tbl findFunc(String name) {

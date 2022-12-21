@@ -9,7 +9,7 @@ import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
 import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
 import FrontEnd.IRGenerator.Quadruple._7_FuncCall_Q;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
@@ -70,7 +70,7 @@ public class UnaryExpNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         // UnaryExp →  PrimaryExp
         //          |  Ident '(' [FuncRParams] ')'
         //          |  UnaryOp UnaryExp
@@ -84,7 +84,7 @@ public class UnaryExpNode extends Node {
             // addIRCode
             // UnaryExp → UnaryOp UnaryExp
             String op = ((LeafNode) children.get(0).getChildren().get(0)).getContent();
-            Var unaryV = (Var) children.get(1).genIR();
+            Var unaryV = children.get(1).genIR();
             if (op.equals("+")) return unaryV;
             else if (op.equals("-")) {
                 if (IRContext.global_decl) {
@@ -119,7 +119,7 @@ public class UnaryExpNode extends Node {
                 // 对于递归结构：由`各节点`负责维护前后状态，即在处理前保留lValInRight原状态，并在处理后恢复
                 Node frpN = children.get(2);
                 for (int i = 0; i < frpN.getChildren().size(); i += 2) {
-                    Var argV = (Var)frpN.getChildren().get(i).genIR();
+                    Var argV = frpN.getChildren().get(i).genIR();
                     String arg_str;
                     if (argV.isConst()) {
                         arg_str = IRGenerator.genNewTemp().getName();

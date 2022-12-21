@@ -1,7 +1,7 @@
 package FrontEnd.nodes;
 
 import FrontEnd.IRGenerator.IRContext;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,7 @@ public class PrimaryExpNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         // PrimaryExp  → '(' Exp ')'
         //             | LVal
         //             | Number
@@ -23,7 +23,7 @@ public class PrimaryExpNode extends Node {
             // PrimaryExp →  Number | LVal
             boolean pre_lVal_right = IRContext.lVal_right;
             IRContext.lVal_right = true;
-            Sym ret = children.get(0).genIR();
+            Var ret = children.get(0).genIR();
             IRContext.lVal_right = pre_lVal_right;
             return ret;
         }

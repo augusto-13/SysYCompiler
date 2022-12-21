@@ -2,7 +2,7 @@ package FrontEnd.nodes;
 
 import FrontEnd.IRGenerator.IRTbl.IRTbl;
 import FrontEnd.IRGenerator.IRTbl.Var_tbl;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
@@ -43,14 +43,14 @@ public class FuncFParamNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         ArrayList<Node> children = getChildren();
         int size = children.size();
         String ident = ((LeafNode) children.get(1)).getContent();
         Var fp = null;
         if (size == 2) fp = new Var("param", ident, 0, 0);
         if (size == 4) fp = new Var("param", ident, 1, 0);
-        if (size == 7) fp = new Var("param", ident, 2, ((Var)children.get(5).genIR()).getConst_value());
+        if (size == 7) fp = new Var("param", ident, 2, (children.get(5).genIR()).getConst_value());
         if (fp == null) {
             System.out.println("Something's wrong with `FuncVarNode` in `nodes`.");
             return null;

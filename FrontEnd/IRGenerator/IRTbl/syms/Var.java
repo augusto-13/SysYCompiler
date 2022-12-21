@@ -1,8 +1,6 @@
 package FrontEnd.IRGenerator.IRTbl.syms;
 
 import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
-import com.sun.javafx.scene.control.skin.IntegerFieldSkin;
-
 import java.util.ArrayList;
 
 // 对于数字：也作为isConst变量存储在Var类中
@@ -11,7 +9,7 @@ import java.util.ArrayList;
 // 对于普通变量：
 // 对于形式参数：
 
-public class Var extends Sym {
+public class Var {
 
     String name;
     boolean isConst = false;

@@ -6,7 +6,7 @@ import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
 import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class MulExpNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         // MulExp → UnaryExp
         //        | MulExp ('*'  |  '/'  |  '% ') UnaryExp
         ArrayList<Node> children = getChildren();
@@ -24,8 +24,8 @@ public class MulExpNode extends Node {
         if (size == 1) return children.get(0).genIR();
         Node mulN = children.get(0);
         Node unaryN = children.get(2);
-        Var mulV = (Var) mulN.genIR();
-        Var unaryV = (Var) unaryN.genIR();
+        Var mulV = mulN.genIR();
+        Var unaryV = unaryN.genIR();
         String op = ((LeafNode) children.get(1)).getContent();
         if (IRContext.global_decl) {
             if (op.equals("*")) return IRGenerator.genConstTemp(mulV.getValidInitVal() * unaryV.getValidInitVal());

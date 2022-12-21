@@ -3,7 +3,7 @@ package FrontEnd.nodes;
 import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRTbl.IRTbl;
 import FrontEnd.IRGenerator.Quadruple._12_Label_Q;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.errorChecker.Context;
 
 public class MainFuncDefNode extends Node {
@@ -23,7 +23,7 @@ public class MainFuncDefNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         // MainFuncDef →  'int'  'main'  '('  ')' Block
         IRTbl.newFrame(IRTbl.FRAME_MAIN, "main");
         IRCodes.addIRCode_ori(new _12_Label_Q("main_func_begin"));

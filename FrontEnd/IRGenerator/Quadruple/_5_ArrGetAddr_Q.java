@@ -32,6 +32,6 @@ public class _5_ArrGetAddr_Q extends IRCode {
 
     @Override
     public String toString() {
-        return o_valid ? String.format("%s = &%s\n", temp, name) : o_isVal ? String.format("%s = &%s[%d]\n", temp, name, o_val) : String.format("%s = &%s[%s]\n", temp, name, o_var);
+        return !o_valid ? String.format("%s = &%s\n", temp, name) : o_isVal ? String.format("%s = &%s[%d]\n", temp, name, o_val) : String.format("%s = &%s[%s]\n", temp, name, o_var);
     }
 }

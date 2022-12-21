@@ -7,7 +7,7 @@ import FrontEnd.IRGenerator.IRTbl.IRTbl;
 import FrontEnd.IRGenerator.Quadruple._4_ArrGetVal_Q;
 import FrontEnd.IRGenerator.Quadruple._5_ArrGetAddr_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
@@ -36,7 +36,7 @@ public class LValNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         // LVal → Ident {'[' Exp ']'}
         boolean lVal_right = IRContext.lVal_right;
         ArrayList<Node> children = getChildren();
@@ -55,7 +55,7 @@ public class LValNode extends Node {
         // LVal → Ident '[' Exp ']'
         if (size == 4) {
             Node expN = children.get(2);
-            Var expV = (Var) expN.genIR();
+            Var expV = expN.genIR();
             Var arrV = IRTbl.findVar(((LeafNode) children.get(0)).getContent());
             assert arrV != null;
             if (arrV.getDim() == 1) {
@@ -98,8 +98,8 @@ public class LValNode extends Node {
             Var arrV = IRTbl.findVar(((LeafNode) children.get(0)).getContent());
             assert arrV != null;
             int d2_len = arrV.getD2();
-            Var index1_expV = (Var) children.get(2).genIR();
-            Var index2_expV = (Var) children.get(5).genIR();
+            Var index1_expV = children.get(2).genIR();
+            Var index2_expV = children.get(5).genIR();
             if (IRContext.global_decl) {
                 return IRGenerator.genConstTemp(arrV.getValidInitArr().get(d2_len * index1_expV.getValidInitVal() + index2_expV.getValidInitVal()));
             }

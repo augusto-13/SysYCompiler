@@ -11,7 +11,7 @@ import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._8_FuncRet_Q;
 import FrontEnd.IRGenerator.Quadruple._10_In_Q;
 import FrontEnd.IRGenerator.Quadruple._11_Out_Q;
-import FrontEnd.IRGenerator.IRTbl.syms.Sym;
+import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
@@ -79,7 +79,7 @@ public class StmtNode extends Node {
     }
 
     @Override
-    public Sym genIR() {
+    public Var genIR() {
         ArrayList<Node> children = getChildren();
         Node first = children.get(0);
         int size = children.size();
@@ -88,9 +88,9 @@ public class StmtNode extends Node {
                 // Stmt → LVal '=' Exp ';'
                 boolean prev_lVal_right = IRContext.lVal_right;
                 IRContext.lVal_right = false;
-                Var lVal_v = (Var) first.genIR();
+                Var lVal_v = first.genIR();
                 IRContext.lVal_right = prev_lVal_right;
-                Var exp_v = (Var) children.get(2).genIR();
+                Var exp_v = children.get(2).genIR();
                 LVal lVal = lVal_v.toLVal();
                 if (exp_v.isConst()) {
                     IRCodes.addIRCode_ori(new _3_Assign_Q(lVal, exp_v.getConst_value()));
@@ -102,7 +102,7 @@ public class StmtNode extends Node {
                 // Stmt → LVal '=' 'getint' '(' ')' ';'
                 boolean prev_lVal_right = IRContext.lVal_right;
                 IRContext.lVal_right = false;
-                Var lVal_v = (Var) first.genIR();
+                Var lVal_v = first.genIR();
                 IRContext.lVal_right = prev_lVal_right;
                 IRCodes.addIRCode_ori(new _10_In_Q(lVal_v.toLVal()));
             }

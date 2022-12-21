@@ -15,7 +15,6 @@ public class IRGenerator {
     public static int label_num = -1;
 
     private final Node rootNode;
-    private final ArrayList<IRCode> irCodes = IRCodes.irCodes_ori;
 
     // 生成一个"t%d"临时变量
     public static Var genNewTemp() {
@@ -33,7 +32,6 @@ public class IRGenerator {
     public IRGenerator(Node root) {
         rootNode = root;
         visitAST();
-        IRCodes.irCodes_ori.addAll(0, IRCodes.irCodes_str);
     }
 
     private void visitAST() {
@@ -43,7 +41,13 @@ public class IRGenerator {
     public void printTo(File ir) {
         try {
             FileWriter fw = new FileWriter(ir, true);
-            for (IRCode irCode : irCodes) {
+            for (IRCode irCode : IRCodes.irCodes_global_str) {
+                fw.write(irCode.toString());
+            }
+            for (IRCode irCode : IRCodes.irCodes_global_decl) {
+                fw.write(irCode.toString());
+            }
+            for (IRCode irCode : IRCodes.irCodes_ori) {
                 fw.write(irCode.toString());
             }
             fw.flush();
