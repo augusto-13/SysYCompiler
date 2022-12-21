@@ -61,7 +61,10 @@ public class LValNode extends Node {
             if (arrV.getDim() == 1) {
                 // a[index_1]
                 if (lVal_right) {
-                    if (expV.isConst()) {
+                    if (IRContext.global_decl) {
+                        return IRGenerator.genConstTemp(arrV.getValidInitArr().get(expV.getValidInitVal()));
+                    }
+                    else if (expV.isConst()) {
                         if (arrV.isConst()) return IRGenerator.genConstTemp(arrV.getConst_value_arr().get(expV.getConst_value()));
                         Var temp = IRGenerator.genNewTemp();
                         IRCodes.addIRCode_ori(new _4_ArrGetVal_Q(temp.getName(), arrV.getName(), expV.getConst_value()));
@@ -97,6 +100,9 @@ public class LValNode extends Node {
             int d2_len = arrV.getD2();
             Var index1_expV = (Var) children.get(2).genIR();
             Var index2_expV = (Var) children.get(5).genIR();
+            if (IRContext.global_decl) {
+                return IRGenerator.genConstTemp(arrV.getValidInitArr().get(d2_len * index1_expV.getValidInitVal() + index2_expV.getValidInitVal()));
+            }
             if (index1_expV.isConst() && index2_expV.isConst()) {
                 int index = d2_len * index1_expV.getConst_value() + index2_expV.getConst_value();
                 if (lVal_right) {

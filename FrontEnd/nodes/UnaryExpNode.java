@@ -1,6 +1,7 @@
 package FrontEnd.nodes;
 
 import FrontEnd.IRGenerator.IRCodes;
+import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.IRTbl.IRTbl;
 import FrontEnd.IRGenerator.Quadruple.Elements.Arg;
@@ -86,7 +87,10 @@ public class UnaryExpNode extends Node {
             Var unaryV = (Var) children.get(1).genIR();
             if (op.equals("+")) return unaryV;
             else if (op.equals("-")) {
-                if (unaryV.isConst()) {
+                if (IRContext.global_decl) {
+                    return IRGenerator.genConstTemp(-unaryV.getValidInitVal());
+                }
+                else if (unaryV.isConst()) {
                     unaryV.negative();
                     return unaryV;
                 }
@@ -97,10 +101,7 @@ public class UnaryExpNode extends Node {
                 }
             }
             else {
-                if (unaryV.isConst()) {
-                    Var res = IRGenerator.genConstTemp(unaryV.getConst_value() == 0 ? 1 : 0);
-                    return res;
-                }
+                if (unaryV.isConst()) return IRGenerator.genConstTemp(unaryV.getConst_value() == 0 ? 1 : 0);
                 Var res = IRGenerator.genNewTemp();
                 IRCodes.addIRCode_ori(new _6_Exp_Q(res.getName(), unaryV.getName(), "sltiu", 1));
                 return res;
