@@ -54,20 +54,22 @@ public class VarDefNode extends Node {
         Var var = null;
         if (size == 1) {
             // VarDef -> Ident
-            var = new Var("var", ident_);
             if (IRContext.global_decl) {
-                IRCodes.addIRCode_ori(new _1_VarDecl_Q(ident_, 0));
+                var = new Var("global", ident_, 0);
+                IRCodes.addIRCode_ori(new _1_VarDecl_Q(ident_));
             } else {
+                var = new Var("var", ident_);
                 IRCodes.addIRCode_ori(new _1_VarDecl_Q(ident_));
             }
         }
         if (size == 3) {
             // VarDef -> Ident '=' InitVal
             Var initValV = (Var) children.get(2).genIR();
-            var = new Var("var", ident_, initValV);
             if (IRContext.global_decl) {
-                IRCodes.addIRCode_ori(new _1_VarDecl_Q(ident_, initValV.getConst_value()));
+                var = new Var("global", ident_, initValV.getValidInitVal());
+                IRCodes.addIRCode_ori(new _1_VarDecl_Q(ident_, initValV.getValidInitVal()));
             } else {
+                var = new Var("var", ident_, initValV);
                 IRCodes.addIRCode_ori(new _1_VarDecl_Q(ident_));
                 if (initValV.isConst()) {
                     IRCodes.addIRCode_ori(new _3_Assign_Q(new LVal(ident_), initValV.getConst_value()));
@@ -79,12 +81,13 @@ public class VarDefNode extends Node {
         if (size == 4) {
             // VarDef -> Ident '[' ConstExp ']'
             int d1_lenV = ((Var) children.get(2).genIR()).getConst_value();
-            var = new Var("var", ident_, 1, d1_lenV, 0);
-            ArrayList<Integer> initArr = new ArrayList<>();
-            for (int i = 0; i < d1_lenV; i++) initArr.add(0);
             if (IRContext.global_decl) {
-                IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV, initArr));
+                ArrayList<Integer> initArr = new ArrayList<>();
+                for (int i = 0; i < d1_lenV; i++) initArr.add(0);
+                var = new Var("global", ident_, 1, d1_lenV, 0, initArr);
+                IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV));
             } else {
+                var = new Var("var", ident_, 1, d1_lenV, 0);
                 IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV));
             }
 
@@ -93,14 +96,13 @@ public class VarDefNode extends Node {
             // VarDef -> Ident '[' ConstExp ']' '=' InitVal
             int d1_lenV = ((Var) children.get(2).genIR()).getConst_value();
             Var initValV = (Var) children.get(5).genIR();
-            ArrayList<Var> value_arr = initValV.getInit_value_arr();
-            var = new Var("var", ident_, 1, d1_lenV, 0, value_arr);
             if (IRContext.global_decl) {
-                ArrayList<Integer> initArr = new ArrayList<>();
-                for (int i = 0; i < d1_lenV; i++) initArr.add(value_arr.get(i).getConst_value());
-                IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV, initArr));
+                var = new Var("global", ident_, 1, d1_lenV, 0, initValV.getValidInitArr());
+                IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV, initValV.getValidInitArr()));
             }
             else {
+                ArrayList<Var> value_arr = initValV.getInit_value_arr();
+                var = new Var("var", ident_, 1, d1_lenV, 0, value_arr);
                 IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV));
                 for (int i = 0; i < d1_lenV; i++) {
                     if (value_arr.get(i).isConst()) {
@@ -116,27 +118,27 @@ public class VarDefNode extends Node {
             // VarDef -> Ident '[' ConstExp ']' '[' 'ConstExp' ']'
             int d1_lenV = ((Var) children.get(2).genIR()).getConst_value();
             int d2_lenV = ((Var) children.get(5).genIR()).getConst_value();
-            var = new Var("var", ident_, 2, d1_lenV, d2_lenV);
             if (IRContext.global_decl) {
                 ArrayList<Integer> initValArr = new ArrayList<>();
                 for (int i = 0; i < d1_lenV * d2_lenV; i++) initValArr.add(0);
-                IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV * d2_lenV, initValArr));
+                var = new Var("global", ident_, 2, d1_lenV, d2_lenV, initValArr);
+                IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV * d2_lenV));
             } else {
+                var = new Var("var", ident_, 2, d1_lenV, d2_lenV);
                 IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV * d2_lenV));
             }
-
         }
         if (size == 9) {
             // VarDef -> Ident '[' ConstExp ']' '[' 'ConstExp' ']' '=' InitVal
             int d1_lenV = ((Var) children.get(2).genIR()).getConst_value();
             int d2_lenV = ((Var) children.get(5).genIR()).getConst_value();
-            ArrayList<Var> value_arr = ((Var) children.get(8).genIR()).getInit_value_arr();
-            var = new Var("var", ident_, 2, d1_lenV, d2_lenV, value_arr);
+            Var initValV = (Var) children.get(8).genIR();
             if (IRContext.global_decl) {
-                ArrayList<Integer> initArr = new ArrayList<>();
-                for (int i = 0; i < d1_lenV * d2_lenV; i++) initArr.add(value_arr.get(i).getConst_value());
-                IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV * d2_lenV, initArr));
+                var = new Var("global", ident_, 2, d1_lenV, d2_lenV, initValV.getValidInitArr());
+                IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV * d2_lenV, initValV.getValidInitArr()));
             } else {
+                ArrayList<Var> value_arr = initValV.getInit_value_arr();
+                var = new Var("var", ident_, 2, d1_lenV, d2_lenV, value_arr);
                 IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV * d2_lenV));
                 for (int i = 0; i < d1_lenV * d2_lenV; i++) {
                     if (value_arr.get(i).isConst()) {
@@ -146,7 +148,6 @@ public class VarDefNode extends Node {
                     }
                 }
             }
-
         }
 
         if (var == null) {
