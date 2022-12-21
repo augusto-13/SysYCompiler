@@ -23,10 +23,6 @@ public class InitValNode extends Node {
             // InitVal → Exp
             // 如果是在`global_decl`中解析表达式，则全部计算使用init_value
             Var expV = (Var) children.get(0).genIR();
-            if (IRContext.global_decl) {
-                Var constV = IRGenerator.genConstTemp(expV.getGlobalInitVal());
-                return constV;
-            }
             return expV;
         } else if (children.get(1).getChildren().size() == 1) {
             // dim == 1
@@ -37,7 +33,7 @@ public class InitValNode extends Node {
                 int d1 = 0;
                 for (int i = 1; i < size - 1; i += 2) {
                     Var globalInitVal = (Var) children.get(i).genIR();
-                    values.add(globalInitVal.getGlobalInitValue());
+                    values.add(globalInitVal.getValidInitVal());
                     d1++;
                 }
                 return new Var("const", "temp", 1, d1, 0, values);
@@ -59,7 +55,6 @@ public class InitValNode extends Node {
             int d1 = (children.size() - 1) / 2;
             int d2 = (children.get(1).getChildren().size() - 1) / 2;
             if (IRContext.global_decl) {
-                /* TODO: 可能有bug */
                 ArrayList<Integer> values = new ArrayList<>();
                 for (int i = 1; i < size - 1; i += 2) {
                     Var globalInitVal = (Var) children.get(i).genIR();
