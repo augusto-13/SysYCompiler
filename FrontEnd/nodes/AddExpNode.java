@@ -1,6 +1,7 @@
 package FrontEnd.nodes;
 
 import FrontEnd.IRGenerator.IRCodes;
+import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
 import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
@@ -27,6 +28,10 @@ public class AddExpNode extends Node {
         Var mulV = (Var) mulN.genIR();
         String op = ((LeafNode) children.get(1)).getContent();
         // addIRCodes
+        if (IRContext.global_decl) {
+            if (op.equals("+")) return IRGenerator.genConstTemp(addV.getValidInitVal() + mulV.getValidInitVal());
+            else return IRGenerator.genConstTemp(addV.getValidInitVal() - mulV.getValidInitVal());
+        }
         if (addV.isConst() && mulV.isConst()) {
             // Cond-1. const +/- const
             // No IRCode to be added.

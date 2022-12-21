@@ -1,6 +1,7 @@
 package FrontEnd.nodes;
 
 import FrontEnd.IRGenerator.IRCodes;
+import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
 import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
@@ -26,6 +27,11 @@ public class MulExpNode extends Node {
         Var mulV = (Var) mulN.genIR();
         Var unaryV = (Var) unaryN.genIR();
         String op = ((LeafNode) children.get(1)).getContent();
+        if (IRContext.global_decl) {
+            if (op.equals("*")) return IRGenerator.genConstTemp(mulV.getValidInitVal() * unaryV.getValidInitVal());
+            else if (op.equals("/")) return IRGenerator.genConstTemp(mulV.getValidInitVal() / unaryV.getValidInitVal());
+            else return IRGenerator.genConstTemp(mulV.getValidInitVal() % unaryV.getValidInitVal());
+        }
         // addIRCodes
         // Cond-1. const +/- const
         // No IRCode to be added.
