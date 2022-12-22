@@ -55,6 +55,7 @@ public class IRTranslator {
                 fw.write(mips_data.toString());
                 fw.write("\n");
             }
+            fw.write(".text\n");
             for (MIPSCode code : mips_main_text) {
                 fw.write(code.toString());
             }

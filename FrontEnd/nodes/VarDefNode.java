@@ -45,12 +45,12 @@ public class VarDefNode extends Node {
 
     @Override
     public Var genIR() {
-        /* 有bug，暂时忽略 */
         ArrayList<Node> children = getChildren();
         int size = children.size();
         String ident = ((LeafNode) children.get(0)).getContent();
+        String pre = (IRContext.in_func)? "^" : "%";
         // 这里很重要，不同层同名变量要进行重命名
-        String ident_ = (IRContext.global_decl) ? "@" + ident : (IRContext.level == 0) ? "%" + ident : "%" + ident + "_" + IRContext.level;
+        String ident_ = (IRContext.global_decl) ? "@" + ident : (IRContext.level == 0) ? pre + ident : pre + ident + "_" + IRContext.level;
         Var var = null;
         if (size == 1) {
             // VarDef -> Ident

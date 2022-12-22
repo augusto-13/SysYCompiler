@@ -3,11 +3,11 @@ package FrontEnd.IRGenerator.Quadruple.Elements;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 
 public class PrintElem {
-    boolean is_num = false;
-    boolean is_var = false;
-    int num;
-    String str_name;
-    String var_name;
+    public boolean is_num = false;
+    public boolean is_var = false;
+    public int num;
+    public String str_name;
+    public String var_name;
 
     public PrintElem(Var var) {
         if (var.isConst()) {
@@ -28,4 +28,6 @@ public class PrintElem {
     public String toString() {
         return is_num ? Integer.toString(num) : is_var ? var_name : str_name;
     }
+
+
 }

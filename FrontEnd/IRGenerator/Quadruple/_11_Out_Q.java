@@ -1,5 +1,7 @@
 package FrontEnd.IRGenerator.Quadruple;
 
+import BackEnd.MIPSCode;
+import BackEnd.MIPSTbl;
 import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
@@ -44,6 +46,28 @@ public class _11_Out_Q extends IRCode{
         return ret.toString();
     }
 
+    @Override
+    public void toText(String type, ArrayList<MIPSCode> mips_text) {
+        for (PrintElem out : outs) {
+            if (out.is_num) {
+                // print %d, 6
+                mips_text.add(new MIPSCode.LoadImm(4, out.num));
+                mips_text.add(new MIPSCode.LoadImm(2, 1));
+                mips_text.add(new MIPSCode.Sys());
+            }
+            else if (out.is_var) {
+                // TODO
+                String var = out.var_name;
+                if (MIPSTbl.regOrMem_trueIfReg(var)) {
 
-
+                }
+            }
+            else {
+                // print %s
+                mips_text.add(new MIPSCode.LA(4, out.str_name));
+                mips_text.add(new MIPSCode.LoadImm(2, 4));
+                mips_text.add(new MIPSCode.Sys());
+            }
+        }
+    }
 }

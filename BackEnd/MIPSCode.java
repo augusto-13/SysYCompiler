@@ -1,21 +1,9 @@
 package BackEnd;
 
 public abstract class MIPSCode {
-
-    public static class Comment extends MIPSCode {
-        public final String s;
-
-        public Comment(String s) {
-            this.s = s;
-        }
-
-        @Override
-        public String toString() {return "# " + s;}
-    }
-
     public static class LoadImm extends MIPSCode {
-        public final int reg;
-        public final int imm;
+         final int reg;
+         final int imm;
 
         public LoadImm(int reg, int imm) {
             this.reg = reg;
@@ -51,6 +39,38 @@ public abstract class MIPSCode {
         @Override
         public String toString() {
             return "\n";
+        }
+    }
+
+    public static class Sys extends MIPSCode {
+        public Sys() {}
+
+        @Override
+        public String toString() {
+            return "syscall\n";
+        }
+    }
+
+    public static class LA extends MIPSCode {
+        int reg;
+        boolean add_str = false;
+        int add;
+        String add_;
+
+        public LA(int reg, int add) {
+            this.reg = reg;
+            this.add = add;
+        }
+
+        public LA(int reg, String add) {
+            add_str = true;
+            this.reg = reg;
+            this.add_ = add;
+        }
+
+        @Override
+        public String toString() {
+            return add_str ? String.format("la $%d, %s\n", reg, add_) : String.format("la $%d, 0x%x\n", reg, add);
         }
     }
 }

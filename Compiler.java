@@ -3,7 +3,6 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 
 import BackEnd.IRTranslator;
-import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.IROptimizer;
 import FrontEnd.IRGenerator.Quadruple.IRCode;

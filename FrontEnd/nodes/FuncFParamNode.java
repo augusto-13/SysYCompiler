@@ -47,10 +47,11 @@ public class FuncFParamNode extends Node {
         ArrayList<Node> children = getChildren();
         int size = children.size();
         String ident = ((LeafNode) children.get(1)).getContent();
+        String ident_ = "!" + ident;
         Var fp = null;
-        if (size == 2) fp = new Var("param", ident, 0, 0);
-        if (size == 4) fp = new Var("param", ident, 1, 0);
-        if (size == 7) fp = new Var("param", ident, 2, (children.get(5).genIR()).getConst_value());
+        if (size == 2) fp = new Var("param", ident_, 0, 0);
+        if (size == 4) fp = new Var("param", ident_, 1, 0);
+        if (size == 7) fp = new Var("param", ident_, 2, (children.get(5).genIR()).getConst_value());
         if (fp == null) {
             System.out.println("Something's wrong with `FuncVarNode` in `nodes`.");
             return null;

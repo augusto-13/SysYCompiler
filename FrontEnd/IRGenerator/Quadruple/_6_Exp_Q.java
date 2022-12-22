@@ -1,5 +1,9 @@
 package FrontEnd.IRGenerator.Quadruple;
 
+import BackEnd.MIPSCode;
+
+import java.util.ArrayList;
+
 public class _6_Exp_Q extends IRCode {
 
     private String res;
@@ -29,5 +33,10 @@ public class _6_Exp_Q extends IRCode {
     @Override
     public String toString() {
         return isImm ? String.format("%s = %s %s %d\n", res, arg1, op, imm) : String.format("%s = %s %s %s\n", res, arg1, op, arg2);
+    }
+
+    @Override
+    public void toText(String type, ArrayList<MIPSCode> mips_text) {
+        super.toText(type, mips_text);
     }
 }
