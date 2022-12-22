@@ -4,6 +4,7 @@ import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
+import FrontEnd.IRGenerator.Quadruple._15_T_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
@@ -51,12 +52,12 @@ public class MulExpNode extends Node {
         if (!mulV.isConst() && unaryV.isConst()) {
             // Cond-2. var '*'/'/'/'%' const
             arg2 = IRGenerator.genNewTemp().getName();
-            IRCodes.addIRCode_ori(new _3_Assign_Q(new LVal(arg2), unaryV.getConst_value()));
+            IRCodes.addIRCode_ori(new _15_T_Assign_Q(arg2, unaryV.getConst_value()));
             IRCodes.addIRCode_ori(new _6_Exp_Q(res, arg1, op, arg2));
         } else if (mulV.isConst() && !unaryV.isConst()) {
             // Cond-3. const +/- var
             arg1 = IRGenerator.genNewTemp().getName();
-            IRCodes.addIRCode_ori(new _3_Assign_Q(new LVal(arg1), mulV.getConst_value()));
+            IRCodes.addIRCode_ori(new _15_T_Assign_Q(arg1, mulV.getConst_value()));
             IRCodes.addIRCode_ori(new _6_Exp_Q(res, arg1, op, arg2));
         } else {
             // Cond-4. var +/- var

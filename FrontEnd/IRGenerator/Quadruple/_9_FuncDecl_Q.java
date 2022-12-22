@@ -28,4 +28,8 @@ public class _9_FuncDecl_Q extends IRCode {
         }
         return ret.toString();
     }
+
+    public String getFuncName() {
+        return name;
+    }
 }

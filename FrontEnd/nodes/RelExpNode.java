@@ -3,8 +3,8 @@ package FrontEnd.nodes;
 import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
-import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
+import FrontEnd.IRGenerator.Quadruple._15_T_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
 
@@ -40,7 +40,7 @@ public class RelExpNode extends Node {
                         String rel = relV.getName();
                         if (relV.isConst()) {
                             rel = IRGenerator.genNewTemp().getName();
-                            IRCodes.addIRCode_ori(new _3_Assign_Q(new LVal(rel), relV.getConst_value()));
+                            IRCodes.addIRCode_ori(new _15_T_Assign_Q(rel, relV.getConst_value()));
                         }
                         IRCodes.addIRCode_ori(new _6_Exp_Q(res, rel, "slt", addV.getName()));
                     }
@@ -52,7 +52,7 @@ public class RelExpNode extends Node {
                         String add = addV.getName();
                         if (addV.isConst()) {
                             add = IRGenerator.genNewTemp().getName();
-                            IRCodes.addIRCode_ori(new _3_Assign_Q(new LVal(add), addV.getConst_value()));
+                            IRCodes.addIRCode_ori(new _15_T_Assign_Q(add, addV.getConst_value()));
                         }
                         IRCodes.addIRCode_ori(new _6_Exp_Q(res, add, "slt", relV.getName()));
                     }
@@ -64,7 +64,7 @@ public class RelExpNode extends Node {
                         String rel = relV.getName();
                         if (relV.isConst()) {
                             rel = IRGenerator.genNewTemp().getName();
-                            IRCodes.addIRCode_ori(new _3_Assign_Q(new LVal(rel), relV.getConst_value()));
+                            IRCodes.addIRCode_ori(new _15_T_Assign_Q(rel, relV.getConst_value()));
                         }
                         IRCodes.addIRCode_ori(new _6_Exp_Q(res, rel, "slt", addV.getName()));
                     }
@@ -77,7 +77,7 @@ public class RelExpNode extends Node {
                         String add = addV.getName();
                         if (addV.isConst()) {
                             add = IRGenerator.genNewTemp().getName();
-                            IRCodes.addIRCode_ori(new _3_Assign_Q(new LVal(add), addV.getConst_value()));
+                            IRCodes.addIRCode_ori(new _15_T_Assign_Q(add, addV.getConst_value()));
                         }
                         IRCodes.addIRCode_ori(new _6_Exp_Q(res, add, "slt", relV.getName()));
                     }

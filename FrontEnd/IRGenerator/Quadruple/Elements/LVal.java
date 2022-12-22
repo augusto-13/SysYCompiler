@@ -1,11 +1,11 @@
 package FrontEnd.IRGenerator.Quadruple.Elements;
 
 public class LVal {
-    String name;
-    boolean isArr;
-    boolean o_isVal;
-    String o_var;
-    int o_val;
+    public String name;
+    public boolean isArr;
+    public boolean o_isVal;
+    public String o_var;
+    public int o_val;
 
     public LVal(String n) {
         isArr = false;

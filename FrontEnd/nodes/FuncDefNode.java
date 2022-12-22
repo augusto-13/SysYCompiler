@@ -99,7 +99,7 @@ public class FuncDefNode extends Node {
         }
         IRContext.in_func = true;
         IRCodes.init_irCodes_curr_func();
-        IRCodes.addIRCode_ori(new _9_FuncDecl_Q(funcName, funcType, params));
+        IRCodes.addIRCode_ori(new _9_FuncDecl_Q("func_" + funcName, funcType, params));
         IRTbl.addEntryToGlobalFrame(new Func_tbl(funcName, funcType, paramVs));
         IRTbl.newFrame(IRTbl.FRAME_FUNC_DEF_BLOCK, funcName);
         children.get(children.size() - 1).genIR();

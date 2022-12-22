@@ -48,8 +48,13 @@ public class _2_ArrDecl_Q extends IRCode {
     }
 
     @Override
-    public void toText(ArrayList<MIPSCode> mips_text) {
-        MIPSTbl.main_name2offset.put(name, MIPSTbl.main_var_offset);
-        MIPSTbl.main_var_offset += d;
+    public void toText(String type, ArrayList<MIPSCode> mips_text) {
+        if (type.equals("main")) {
+            MIPSTbl.main_name2offset.put(name, MIPSTbl.main_var_offset);
+            MIPSTbl.main_var_offset += d;
+        }
+        else {
+
+        }
     }
 }

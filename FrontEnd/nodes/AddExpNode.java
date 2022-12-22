@@ -4,10 +4,12 @@ import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
+import FrontEnd.IRGenerator.Quadruple._15_T_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
+import org.omg.CORBA._IDLTypeStub;
 
 import java.util.ArrayList;
 
@@ -54,7 +56,7 @@ public class AddExpNode extends Node {
                 IRCodes.addIRCode_ori(new _6_Exp_Q(res, arg2, op, addV.getConst_value()));
             } else {
                 arg1 = IRGenerator.genNewTemp().getName();
-                IRCodes.addIRCode_ori(new _3_Assign_Q(new LVal(arg1), addV.getConst_value()));
+                IRCodes.addIRCode_ori(new _15_T_Assign_Q(arg1, addV.getConst_value()));
                 IRCodes.addIRCode_ori(new _6_Exp_Q(res, arg1, op, arg2));
             }
 

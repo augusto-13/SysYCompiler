@@ -4,12 +4,9 @@ import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.IRTbl.IRTbl;
-import FrontEnd.IRGenerator.Quadruple.Elements.Arg;
-import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
-import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
+import FrontEnd.IRGenerator.Quadruple._15_T_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
 import FrontEnd.IRGenerator.Quadruple._7_FuncCall_Q;
-import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
@@ -123,14 +120,14 @@ public class UnaryExpNode extends Node {
                     String arg_str;
                     if (argV.isConst()) {
                         arg_str = IRGenerator.genNewTemp().getName();
-                        IRCodes.addIRCode_ori(new _3_Assign_Q(new LVal(arg_str), argV.getConst_value()));
+                        IRCodes.addIRCode_ori(new _15_T_Assign_Q(arg_str, argV.getConst_value()));
                     } else {
                         arg_str = argV.getName();
                     }
                     args.add(arg_str);
                 }
             }
-            IRCodes.addIRCode_ori(new _7_FuncCall_Q(ident, args));
+            IRCodes.addIRCode_ori(new _7_FuncCall_Q("func_" + ident, args));
             // if ret_void
             if (IRTbl.findFunc(ident).retVoid()) return null;
             // if ret_int
