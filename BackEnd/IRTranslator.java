@@ -11,7 +11,8 @@ public class IRTranslator {
 
     ArrayList<IRCode> ir_data_global_decl = IRCodes.irCodes_global_decl;
     ArrayList<IRCode> ir_data_global_str = IRCodes.irCodes_global_str;
-    ArrayList<IRCode> ir_text = IRCodes.irCodes_main;
+    ArrayList<IRCode> ir_text_main = IRCodes.irCodes_main;
+    ArrayList<ArrayList<IRCode>> ir_text_func = IRCodes.irCodes_func;
     StringBuilder mips_data = new StringBuilder();
     ArrayList<MIPSCode> mips_text = new ArrayList<>();
 
@@ -21,8 +22,6 @@ public class IRTranslator {
     }
 
     public void data() {
-        if (ir_data_global_decl.isEmpty() && ir_data_global_str.isEmpty()) return;
-        mips_data.append(".data\n");
         for (IRCode decl : ir_data_global_decl) {
             decl.toData(mips_data);
         }
@@ -38,7 +37,10 @@ public class IRTranslator {
     public void printTo(File mips) {
         try {
             FileWriter fw = new FileWriter(mips, true);
-            fw.write(mips_data.toString());
+            if (!mips_data.toString().isEmpty()) {
+                fw.write(".data\n");
+                fw.write(mips_data.toString());
+            }
             fw.flush();
             fw.close();
         } catch (Exception e) {

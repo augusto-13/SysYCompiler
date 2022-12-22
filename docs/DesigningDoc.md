@@ -1,6 +1,6 @@
 # 设计文档
 **加粗**部分为当前思考进度
-## FrontEnd
+## 1. FrontEnd
 ### A. Lexer
 ### B. Parser
 ### C. Static Type-checking (Error Handling)
@@ -41,4 +41,9 @@
 + `var`
 + `var array`
 + `const str`
-#### 2-2-1. 
+#### 2-2-2. `text`字段
+
+稍显棘手的部分来了，下面分步解决两个难点：
+
+##### 2-2-2-1. MIPS变量存储布局
+
