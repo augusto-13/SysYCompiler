@@ -5,7 +5,6 @@ import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRTbl.IRTbl;
 import FrontEnd.IRGenerator.IRTbl.Var_tbl;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
-import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.Quadruple._2_ArrDecl_Q;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
@@ -49,7 +48,7 @@ public class ConstDefNode extends Node {
         int dim = size / 3 - 1;
         LeafNode identNode = (LeafNode) children.get(0);
         String ident = identNode.getContent();
-        ident = (IRContext.global_decl)? "@" + ident : "%" + ident;
+        ident = (IRContext.global_decl) ? "@" + ident : (IRContext.level == 0) ? "%" + ident : "%" + ident + "_" + IRContext.level;
         Var const_init_value = children.get(size - 1).genIR();
         assert const_init_value.isConst();
         Var constVar;

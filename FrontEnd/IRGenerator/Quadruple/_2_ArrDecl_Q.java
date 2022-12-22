@@ -1,6 +1,9 @@
 package FrontEnd.IRGenerator.Quadruple;
 
 
+import BackEnd.MIPSCode;
+import BackEnd.MIPSTbl;
+
 import java.util.ArrayList;
 
 public class _2_ArrDecl_Q extends IRCode {
@@ -40,5 +43,13 @@ public class _2_ArrDecl_Q extends IRCode {
                 mips_data.append(String.format(".word %d\n", i));
             }
         }
+        MIPSTbl.global_name2offset.put(name, MIPSTbl.global_offset);
+        MIPSTbl.global_offset += d;
+    }
+
+    @Override
+    public void toText(ArrayList<MIPSCode> mips_text) {
+        MIPSTbl.main_name2offset.put(name, MIPSTbl.main_var_offset);
+        MIPSTbl.main_var_offset += d;
     }
 }

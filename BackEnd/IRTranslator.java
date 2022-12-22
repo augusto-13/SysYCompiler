@@ -2,6 +2,7 @@ package BackEnd;
 
 import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.Quadruple.IRCode;
+import FrontEnd.IRGenerator.Quadruple._1_VarDecl_Q;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -32,7 +33,7 @@ public class IRTranslator {
 
     public void text() {
         for (IRCode irCode : ir_text_main) {
-            
+            irCode.toText(mips_text);
         }
     }
 
