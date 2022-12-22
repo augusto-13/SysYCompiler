@@ -1,6 +1,7 @@
 package FrontEnd.nodes;
 
 import FrontEnd.IRGenerator.IRCodes;
+import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRTbl.Func_tbl;
 import FrontEnd.IRGenerator.IRTbl.IRTbl;
 import FrontEnd.IRGenerator.Quadruple.Elements.Param;
@@ -96,15 +97,15 @@ public class FuncDefNode extends Node {
             if (paramV.getDim() == 0) params.add(new Param(paramV.getName()));
             else params.add(new Param(paramV.getName(), paramV.getD2()));
         }
+        IRContext.in_func = true;
+        IRCodes.init_irCodes_curr_func();
         IRCodes.addIRCode_ori(new _9_FuncDecl_Q(funcName, funcType, params));
         IRTbl.addEntryToGlobalFrame(new Func_tbl(funcName, funcType, paramVs));
-        // IRContext.block_in_func_def = true;
-        IRCodes.addIRCode_ori(new _12_Label_Q(String.format("func_def_block_%s_begin", funcName)));
         IRTbl.newFrame(IRTbl.FRAME_FUNC_DEF_BLOCK, funcName);
         children.get(children.size() - 1).genIR();
-        IRCodes.addIRCode_ori(new _12_Label_Q(String.format("func_def_block_%s_end", funcName)));
         IRTbl.removeCurrFrame();
-        // IRContext.block_in_func_def = false;
+        IRContext.in_func = false;
+        IRCodes.merge_curr_func_into_irCodes_func();
         return null;
     }
 }

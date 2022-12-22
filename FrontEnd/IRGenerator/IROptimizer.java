@@ -8,7 +8,7 @@ import java.io.FileWriter;
 public class IROptimizer {
 
     public IROptimizer() {
-        IRCodes.irCodes_opt.addAll(IRCodes.irCodes_ori);
+        IRCodes.irCodes_opt.addAll(IRCodes.irCodes_main);
     }
 
     public void printTo(File ir_) {

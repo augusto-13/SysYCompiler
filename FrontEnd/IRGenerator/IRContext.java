@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class IRContext {
     public static boolean global_decl = false;
-    public static boolean block_in_func_def = false;
+    public static boolean in_func = false;
     public static int level = 0;
     public static HashMap<String, Integer> name2d2 = new HashMap<>();
     public static boolean lVal_right = false;

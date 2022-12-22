@@ -26,9 +26,9 @@ public class MainFuncDefNode extends Node {
     public Var genIR() {
         // MainFuncDef →  'int'  'main'  '('  ')' Block
         IRTbl.newFrame(IRTbl.FRAME_MAIN, "main");
-        IRCodes.addIRCode_ori(new _12_Label_Q("main_func_begin"));
+        // IRCodes.addIRCode_ori(new _12_Label_Q("main_func_begin"));
         getChildren().get(4).genIR();
-        IRCodes.addIRCode_ori(new _12_Label_Q("main_func_end"));
+        // IRCodes.addIRCode_ori(new _12_Label_Q("main_func_end"));
         return null;
     }
 }

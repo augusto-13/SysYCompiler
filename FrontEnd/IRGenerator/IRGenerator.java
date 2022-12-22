@@ -6,6 +6,7 @@ import FrontEnd.nodes.*;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 
 public class IRGenerator {
     public static int block_num = -1;
@@ -39,15 +40,29 @@ public class IRGenerator {
 
     public void printTo(File ir) {
         try {
+            int func_num = -1;
             FileWriter fw = new FileWriter(ir, true);
+            if (!IRCodes.irCodes_global_str.isEmpty())
+                fw.write("**global_str**\n");
             for (IRCode irCode : IRCodes.irCodes_global_str) {
                 fw.write(irCode.toString());
             }
+            if (!IRCodes.irCodes_global_decl.isEmpty())
+                fw.write("\n**global_decl**\n");
             for (IRCode irCode : IRCodes.irCodes_global_decl) {
                 fw.write(irCode.toString());
             }
-            for (IRCode irCode : IRCodes.irCodes_ori) {
+            fw.write("\n**main**\n");
+            for (IRCode irCode : IRCodes.irCodes_main) {
                 fw.write(irCode.toString());
+            }
+            fw.write("\n");
+            for (ArrayList<IRCode> irCodes : IRCodes.irCodes_func) {
+                fw.write(String.format("**func_%d**\n", ++func_num));
+                for (IRCode irCode : irCodes) {
+                    fw.write(irCode.toString());
+                }
+                fw.write("\n");
             }
             fw.flush();
             fw.close();

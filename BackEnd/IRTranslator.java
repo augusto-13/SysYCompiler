@@ -11,7 +11,7 @@ public class IRTranslator {
 
     ArrayList<IRCode> ir_data_global_decl = IRCodes.irCodes_global_decl;
     ArrayList<IRCode> ir_data_global_str = IRCodes.irCodes_global_str;
-    ArrayList<IRCode> ir_text = IRCodes.irCodes_ori;
+    ArrayList<IRCode> ir_text = IRCodes.irCodes_main;
     StringBuilder mips_data = new StringBuilder();
     ArrayList<MIPSCode> mips_text = new ArrayList<>();
 
