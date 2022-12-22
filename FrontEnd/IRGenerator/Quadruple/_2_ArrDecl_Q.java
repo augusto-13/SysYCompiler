@@ -28,4 +28,17 @@ public class _2_ArrDecl_Q extends IRCode {
         for (int i = 0; i < d; i++) ret.append(String.format("%s[%d] = %d\n", name, i, global_initVal.get(i)));
         return ret.toString();
     }
+
+    @Override
+    public void toData(StringBuilder mips_data) {
+        if (global_initVal.isEmpty()) {
+            mips_data.append(String.format("%s: .space %d\n", name.substring(1), d << 2));
+        }
+        else {
+            mips_data.append(name.substring(1)).append(":\n");
+            for (Integer i : global_initVal) {
+                mips_data.append(String.format(".word %d\n", i));
+            }
+        }
+    }
 }

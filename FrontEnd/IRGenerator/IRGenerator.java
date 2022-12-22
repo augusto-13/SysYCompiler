@@ -6,7 +6,6 @@ import FrontEnd.nodes.*;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
 
 public class IRGenerator {
     public static int block_num = -1;

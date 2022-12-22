@@ -21,7 +21,14 @@ public class IRTranslator {
     }
 
     public void data() {
-
+        if (ir_data_global_decl.isEmpty() && ir_data_global_str.isEmpty()) return;
+        mips_data.append(".data\n");
+        for (IRCode decl : ir_data_global_decl) {
+            decl.toData(mips_data);
+        }
+        for (IRCode str : ir_data_global_str) {
+            str.toData(mips_data);
+        }
     }
 
     public void text() {
@@ -31,15 +38,7 @@ public class IRTranslator {
     public void printTo(File mips) {
         try {
             FileWriter fw = new FileWriter(mips, true);
-            for (IRCode irCode : IRCodes.irCodes_global_str) {
-                fw.write(irCode.toString());
-            }
-            for (IRCode irCode : IRCodes.irCodes_global_decl) {
-                fw.write(irCode.toString());
-            }
-            for (IRCode irCode : IRCodes.irCodes_ori) {
-                fw.write(irCode.toString());
-            }
+            fw.write(mips_data.toString());
             fw.flush();
             fw.close();
         } catch (Exception e) {
