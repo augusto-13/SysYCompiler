@@ -31,7 +31,9 @@ public class IRTranslator {
     }
 
     public void text() {
-
+        for (IRCode irCode : ir_text_main) {
+            
+        }
     }
 
     public void printTo(File mips) {
