@@ -1,6 +1,7 @@
 package FrontEnd.IRGenerator.Quadruple;
 
 import BackEnd.MIPSCode;
+import BackEnd.MIPSTbl;
 
 import java.util.ArrayList;
 
@@ -37,6 +38,8 @@ public class _6_Exp_Q extends IRCode {
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
-        super.toText(type, mips_text);
+        int res_num = MIPSTbl.allocate_t_reg(res);
+
+        /* TODO */
     }
 }

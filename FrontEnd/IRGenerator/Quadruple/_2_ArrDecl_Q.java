@@ -43,18 +43,19 @@ public class _2_ArrDecl_Q extends IRCode {
                 mips_data.append(String.format(".word %d\n", i));
             }
         }
-        MIPSTbl.global_name2offset.put(name, MIPSTbl.global_offset);
-        MIPSTbl.global_offset += d;
+        MIPSTbl.global_name2addr.put(name, MIPSTbl.global_address);
+        MIPSTbl.global_address += (d << 2);
     }
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
         if (type.equals("main")) {
-            MIPSTbl.main_name2offset.put(name, MIPSTbl.main_var_offset);
-            MIPSTbl.main_var_offset += d;
+            MIPSTbl.main_name2addr.put(name, MIPSTbl.main_var_address);
+            MIPSTbl.main_var_address += (d << 2);
         }
         else {
-
+            MIPSTbl.func_name2offset.put(name, MIPSTbl.sp_offset - ((d - 1) << 2));
+            MIPSTbl.sp_offset -= (d << 2);
         }
     }
 }

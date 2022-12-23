@@ -90,7 +90,6 @@ public class VarDefNode extends Node {
                 var = new Var("var", ident_, 1, d1_lenV, 0);
                 IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident_, d1_lenV));
             }
-
         }
         if (size == 6) {
             // VarDef -> Ident '[' ConstExp ']' '=' InitVal

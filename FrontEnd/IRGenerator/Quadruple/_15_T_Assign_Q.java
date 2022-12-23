@@ -21,8 +21,7 @@ public class _15_T_Assign_Q extends IRCode {
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
-        assert t_left.charAt(0) == 't';
-        int t_num = MIPSTbl.get_t_num(t_left);
-        mips_text.add(new MIPSCode.LoadImm(t_num, right_val));
+        int t_num = MIPSTbl.allocate_t_reg(t_left);
+        mips_text.add(new MIPSCode.LI(t_num, right_val));
     }
 }

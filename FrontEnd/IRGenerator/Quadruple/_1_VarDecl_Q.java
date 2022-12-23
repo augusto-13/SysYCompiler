@@ -29,18 +29,20 @@ public class _1_VarDecl_Q extends IRCode {
     public void toData(StringBuilder mips_data) {
         if (init) mips_data.append(String.format("%s: .word %d\n", name.substring(1), global_initVal));
         else mips_data.append(String.format("%s: .word 0\n", name.substring(1)));
-        MIPSTbl.global_name2offset.put(name, MIPSTbl.global_offset);
-        MIPSTbl.global_offset++;
+        MIPSTbl.global_name2addr.put(name, MIPSTbl.global_address);
+        MIPSTbl.global_address += 4;
     }
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
         if (type.equals("main")) {
-            MIPSTbl.main_name2offset.put(name, MIPSTbl.main_var_offset);
-            MIPSTbl.main_var_offset++;
+            if (MIPSTbl.allocate_s_reg(name)) return;
+            MIPSTbl.main_name2addr.put(name, MIPSTbl.main_var_address);
+            MIPSTbl.main_var_address += 4;
         }
         else {
-
+            MIPSTbl.func_name2offset.put(name, MIPSTbl.sp_offset);
+            MIPSTbl.sp_offset -= 4;
         }
     }
 }

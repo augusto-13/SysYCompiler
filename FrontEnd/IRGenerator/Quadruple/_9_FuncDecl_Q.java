@@ -1,5 +1,7 @@
 package FrontEnd.IRGenerator.Quadruple;
 
+import BackEnd.MIPSCode;
+import BackEnd.MIPSTbl;
 import FrontEnd.IRGenerator.Quadruple.Elements.Param;
 
 import java.util.ArrayList;
@@ -31,5 +33,10 @@ public class _9_FuncDecl_Q extends IRCode {
 
     public String getFuncName() {
         return name;
+    }
+
+    @Override
+    public void toText(String type, ArrayList<MIPSCode> mips_text) {
+        MIPSTbl.sp_offset = 0;
     }
 }

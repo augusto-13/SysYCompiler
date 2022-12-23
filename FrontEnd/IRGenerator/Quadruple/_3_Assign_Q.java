@@ -30,6 +30,7 @@ public class _3_Assign_Q extends IRCode {
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
+        /* TODO */
         if (type.equals("main")) {
             // 主函数中
             if (R_isVal) {
@@ -57,6 +58,9 @@ public class _3_Assign_Q extends IRCode {
                     // %s[%s] = %s
                 }
             }
+        }
+        else {
+
         }
     }
 }
