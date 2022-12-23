@@ -1,9 +1,11 @@
 package BackEnd;
 
+
 public abstract class MIPSCode {
+
     public static class LI extends MIPSCode {
-         final int reg;
-         final int imm;
+        final int reg;
+        final int imm;
 
         public LI(int reg, int imm) {
             this.reg = reg;
@@ -30,7 +32,8 @@ public abstract class MIPSCode {
     }
 
     public static class Enter extends MIPSCode {
-        public Enter() {}
+        public Enter() {
+        }
 
         @Override
         public String toString() {
@@ -39,7 +42,8 @@ public abstract class MIPSCode {
     }
 
     public static class Sys extends MIPSCode {
-        public Sys() {}
+        public Sys() {
+        }
 
         @Override
         public String toString() {
@@ -104,7 +108,45 @@ public abstract class MIPSCode {
         public String toString() {
             switch (op) {
                 case "+":
-                    return
+                    return String.format("addu $%d, $%d, $%d\n", res, reg1, reg2);
+                case "-":
+                    return String.format("subu $%d, $%d, $%d\n", res, reg1, reg2);
+                case "*":
+                    return String.format("mult $%d $%d\nmflo $%d\n", reg1, reg2, res);
+                case "/":
+                    return String.format("div $%d, $%d\nmflo $%d\n", reg1, reg2, res);
+                case "%":
+                    return String.format("div $%d, $%d\nmfhi $%d\n", reg1, reg2, res);
+                default:
+                    return String.format("%s $%d, $%d, $%d\n", op, res, reg1, reg2);
+            }
+        }
+    }
+
+    public static class Cal_RI extends MIPSCode {
+        int res;
+        int reg;
+        int imm;
+        String op;
+
+        public Cal_RI(int res, int reg, String op, int imm) {
+            this.res = res;
+            this.reg = reg;
+            this.imm = imm;
+            this.op = op;
+        }
+
+        @Override
+        public String toString() {
+            switch (op) {
+                case "+":
+                    return String.format("addiu $%d, $%d, %d\n", res, reg, imm);
+                case "-":
+                    return String.format("subiu $%d, $%d, %d\n", res, reg, imm);
+                case "<<":
+                    return String.format("sll $%d, $%d, %d\n", res, reg, imm);
+                default:
+                    return String.format("%s $%d, $%d, %d\n", op, reg, imm, res);
             }
         }
     }

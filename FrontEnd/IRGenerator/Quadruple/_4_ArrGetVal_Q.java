@@ -46,19 +46,40 @@ public class _4_ArrGetVal_Q extends IRCode {
                 // %s[%s]
                 if (o_var.charAt(0) == 't') {
                     int t_in = MIPSTbl.get_t_num(o_var);
-                    mips_text.add(new )
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, t_in, "<<", 2));
+                    mips_text.add(new MIPSCode.LW(t_num, g_addr, MIPSTbl.t0));
                 }
                 else if (o_var.charAt(0) == '@') {
-
+                    int g_addr_in = MIPSTbl.global_name2addr.get(o_var);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t0, g_addr_in, 0));
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.t0, "<<", 2));
+                    mips_text.add(new MIPSCode.LW(t_num, g_addr, MIPSTbl.t0));
                 }
                 else if (o_var.charAt(0) == '%') {
-
+                    if (MIPSTbl.regOrMem_trueIfReg(o_var)) {
+                        // 分配了寄存器
+                        mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.get_s_num(o_var), "<<", 2));
+                        mips_text.add(new MIPSCode.LW(t_num, g_addr, MIPSTbl.t0));
+                    }
+                    else {
+                        // 未分配寄存器
+                        int m_addr_in = MIPSTbl.main_name2addr.get(o_var);
+                        mips_text.add(new MIPSCode.LW(MIPSTbl.t0, m_addr_in, 0));
+                        mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.t0, "<<", 2));
+                        mips_text.add(new MIPSCode.LW(t_num, g_addr, MIPSTbl.t0));
+                    }
                 }
                 else if (o_var.charAt(0) == '^') {
-
+                    int sp_offset_in = MIPSTbl.func_name2offset.get(o_var);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t0, sp_offset_in, MIPSTbl.sp));
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.t0, "<<", 2));
+                    mips_text.add(new MIPSCode.LW(t_num, g_addr, MIPSTbl.t0));
                 }
                 else if (o_var.charAt(0) == '!') {
-
+                    int o_var_sp_offset_in = MIPSTbl.get_para_name_2_sp_offset(o_var);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t0, o_var_sp_offset_in, MIPSTbl.sp));
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.t0, "<<", 2));
+                    mips_text.add(new MIPSCode.LW(t_num, g_addr, MIPSTbl.t0));
                 }
                 else {
                     System.out.println("Something's wrong with _4_Q <2>");
@@ -72,7 +93,34 @@ public class _4_ArrGetVal_Q extends IRCode {
                 mips_text.add(new MIPSCode.LW(t_num, m_addr + (o_val << 2), 0));
             }
             else {
-                //
+                if (o_var.charAt(0) == 't') {
+                    int t_in = MIPSTbl.get_t_num(o_var);
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, t_in, "<<", 2));
+                    mips_text.add(new MIPSCode.LW(t_num, m_addr, MIPSTbl.t0));
+                }
+                else if (o_var.charAt(0) == '@') {
+                    int g_addr_in = MIPSTbl.global_name2addr.get(o_var);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t0, g_addr_in, 0));
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.t0, "<<", 2));
+                    mips_text.add(new MIPSCode.LW(t_num, m_addr, MIPSTbl.t0));
+                }
+                else if (o_var.charAt(0) == '%') {
+                    if (MIPSTbl.regOrMem_trueIfReg(o_var)) {
+                        // 分配了寄存器
+                        mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.get_s_num(o_var), "<<", 2));
+                        mips_text.add(new MIPSCode.LW(t_num, m_addr, MIPSTbl.t0));
+                    }
+                    else {
+                        // 未分配寄存器
+                        int m_addr_in = MIPSTbl.main_name2addr.get(o_var);
+                        mips_text.add(new MIPSCode.LW(MIPSTbl.t0, m_addr_in, 0));
+                        mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.t0, "<<", 2));
+                        mips_text.add(new MIPSCode.LW(t_num, m_addr, MIPSTbl.t0));
+                    }
+                }
+                else {
+                    System.out.println("Something's wrong with _4_Q <3>");
+                }
             }
         }
         else if (name.charAt(0) == '^') {
@@ -82,7 +130,36 @@ public class _4_ArrGetVal_Q extends IRCode {
                 mips_text.add(new MIPSCode.LW(t_num, sp_offset + (o_val << 2), MIPSTbl.sp));
             }
             else {
-
+                if (o_var.charAt(0) == 't') {
+                    int t_in = MIPSTbl.get_t_num(o_var);
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, t_in, "<<", 2));
+                    mips_text.add(new MIPSCode.Cal_RR(MIPSTbl.t0, MIPSTbl.t0, "+", MIPSTbl.sp));
+                    mips_text.add(new MIPSCode.LW(t_num, sp_offset, MIPSTbl.t0));
+                }
+                else if (o_var.charAt(0) == '@') {
+                    int g_addr_in = MIPSTbl.global_name2addr.get(o_var);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t0, g_addr_in, 0));
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.t0, "<<", 2));
+                    mips_text.add(new MIPSCode.Cal_RR(MIPSTbl.t0, MIPSTbl.t0, "+", MIPSTbl.sp));
+                    mips_text.add(new MIPSCode.LW(t_num, sp_offset, MIPSTbl.t0));
+                }
+                else if (o_var.charAt(0) == '^') {
+                    int sp_offset_in = MIPSTbl.func_name2offset.get(o_var);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t0, sp_offset_in, MIPSTbl.sp));
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.t0, "<<", 2));
+                    mips_text.add(new MIPSCode.Cal_RR(MIPSTbl.t0, MIPSTbl.t0, "+", MIPSTbl.sp));
+                    mips_text.add(new MIPSCode.LW(t_num, sp_offset, MIPSTbl.t0));
+                }
+                else if (o_var.charAt(0) == '!') {
+                    int o_var_sp_offset_in = MIPSTbl.get_para_name_2_sp_offset(o_var);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t0, o_var_sp_offset_in, MIPSTbl.sp));
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t0, MIPSTbl.t0, "<<", 2));
+                    mips_text.add(new MIPSCode.Cal_RR(MIPSTbl.t0, MIPSTbl.t0, "+", MIPSTbl.sp));
+                    mips_text.add(new MIPSCode.LW(t_num, sp_offset, MIPSTbl.t0));
+                }
+                else {
+                    System.out.println("Something's wrong with _4_Q <4>");
+                }
             }
         }
         else if (name.charAt(0) == '!'){
@@ -93,7 +170,36 @@ public class _4_ArrGetVal_Q extends IRCode {
                 mips_text.add(new MIPSCode.LW(t_num, o_val << 2, MIPSTbl.t0));
             }
             else {
-
+                if (o_var.charAt(0) == 't') {
+                    int t_in = MIPSTbl.get_t_num(o_var);
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t1, t_in, "<<", 2));
+                    mips_text.add(new MIPSCode.Cal_RR(MIPSTbl.t0, MIPSTbl.t1, "+", MIPSTbl.t0));
+                    mips_text.add(new MIPSCode.LW(t_num, 0, MIPSTbl.t0));
+                }
+                else if (o_var.charAt(0) == '@') {
+                    int g_addr_in = MIPSTbl.global_name2addr.get(o_var);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t1, g_addr_in, 0));
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t1, MIPSTbl.t1, "<<", 2));
+                    mips_text.add(new MIPSCode.Cal_RR(MIPSTbl.t0, MIPSTbl.t0, "+", MIPSTbl.t1));
+                    mips_text.add(new MIPSCode.LW(t_num, 0, MIPSTbl.t0));
+                }
+                else if (o_var.charAt(0) == '^') {
+                    int sp_offset_in = MIPSTbl.func_name2offset.get(o_var);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t1, sp_offset_in, MIPSTbl.sp));
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t1, MIPSTbl.t1, "<<", 2));
+                    mips_text.add(new MIPSCode.Cal_RR(MIPSTbl.t0, MIPSTbl.t0, "+", MIPSTbl.t1));
+                    mips_text.add(new MIPSCode.LW(t_num, 0, MIPSTbl.t0));
+                }
+                else if (o_var.charAt(0) == '!') {
+                    int o_var_sp_offset_in = MIPSTbl.get_para_name_2_sp_offset(o_var);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t1, o_var_sp_offset_in, MIPSTbl.sp));
+                    mips_text.add(new MIPSCode.Cal_RI(MIPSTbl.t1, MIPSTbl.t1, "<<", 2));
+                    mips_text.add(new MIPSCode.Cal_RR(MIPSTbl.t0, MIPSTbl.t0, "+", MIPSTbl.t1));
+                    mips_text.add(new MIPSCode.LW(t_num, 0, MIPSTbl.t0));
+                }
+                else {
+                    System.out.println("Something's wrong with _4_Q <5>");
+                }
             }
         }
         else {

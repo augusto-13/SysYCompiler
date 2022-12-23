@@ -25,7 +25,8 @@ public class MIPSTbl {
 
     public static int get_para_name_2_sp_offset(String name) {
         int k = func_paraName.size();
-        for (int i = 0; i < k; i++) {
+        int i = 0;
+        for (; i < k; i++) {
             if (func_paraName.get(i).equals(name)) break;
         }
         assert i < k;
@@ -73,6 +74,7 @@ public class MIPSTbl {
     public static int get_t_num(String name) {
         int ret_reg_num = tName2tNum.get(name);
         release_t(name);
+        System.out.println(ret_reg_num + " is released!!!");
         return ret_reg_num;
     }
 
