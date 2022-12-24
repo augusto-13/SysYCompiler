@@ -83,8 +83,8 @@ public class _5_ArrGetAddr_Q extends IRCode {
             }
             else if (name.charAt(0) == '!') {
                 int sp_offset = MIPSTbl.get_para_name_2_sp_offset(name);
-                /*TODO*/
-                mips_text.add(new MIPSCode.Cal_RI(t_num, sp, "+", sp_offset + (o_val << 2)));
+                mips_text.add(new MIPSCode.LW(t0, sp_offset, sp));
+                mips_text.add(new MIPSCode.Cal_RI(t_num, t0, "+", (o_val << 2)));
             }
             else if (name.charAt(0) == '^') {
                 int sp_offset = MIPSTbl.func_name2offset.get(name);
@@ -144,7 +144,8 @@ public class _5_ArrGetAddr_Q extends IRCode {
             }
             else if (name.charAt(0) == '!') {
                 int sp_offset = MIPSTbl.get_para_name_2_sp_offset(name);
-                mips_text.add(new MIPSCode.LW(t1, sp_offset, sp));
+                int addr_reg = t1;
+                mips_text.add(new MIPSCode.LW(addr_reg, sp_offset, sp));
                 // mips_text.add(new MIPSCode.Cal_RI(t_num, sp, "+", sp_offset + (o_val << 2)));
                 // gist: 1) $t0 = o_var << 2
                 //       2) $t0 = $t0 + sp_offset
@@ -171,8 +172,7 @@ public class _5_ArrGetAddr_Q extends IRCode {
                 else {
                     System.out.println("Something's wrong with _5_Q <4>");
                 }
-                mips_text.add(new MIPSCode.Cal_RI(t0, t0, "+", t1));
-                mips_text.add(new MIPSCode.Cal_RR(t_num, sp, "+", t0));
+                mips_text.add(new MIPSCode.Cal_RR(t_num, t0, "+", addr_reg));
             }
             else if (name.charAt(0) == '^') {
                 int sp_offset = MIPSTbl.func_name2offset.get(name);
