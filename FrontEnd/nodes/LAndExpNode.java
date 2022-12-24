@@ -4,7 +4,6 @@ import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
-import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.Quadruple._12_Label_Q;
 import FrontEnd.IRGenerator.Quadruple._13_Jump_Q;
 
@@ -50,7 +49,23 @@ public class LAndExpNode extends Node {
             IRCodes.addIRCode_ori(new _12_Label_Q(label1));
             IRContext.if_label = prev_if_label;
             IRContext.jump_if = prev_jump_if;
-            children.get(2).genIR();
+            Var eqExpV = children.get(2).genIR();
+            if (eqExpV.isConst()) {
+                int val = eqExpV.getConst_value();
+                if (IRContext.jump_if && val != 0) {
+                    IRCodes.addIRCode_ori(new _13_Jump_Q("goto", IRContext.if_label));
+                }
+                else if (!IRContext.jump_if && val == 0){
+                    IRCodes.addIRCode_ori(new _13_Jump_Q("goto", IRContext.else_label));
+                }
+            } else {
+                String arg = eqExpV.getName();
+                if (IRContext.jump_if) {
+                    IRCodes.addIRCode_ori(new _13_Jump_Q("bnz", IRContext.if_label, arg));
+                } else {
+                    IRCodes.addIRCode_ori(new _13_Jump_Q("bez", IRContext.else_label, arg));
+                }
+            }
         }
         return null;
     }

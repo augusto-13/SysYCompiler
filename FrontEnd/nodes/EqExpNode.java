@@ -41,13 +41,14 @@ public class EqExpNode extends Node {
             } else {
                 IRCodes.addIRCode_ori(new _6_Exp_Q(sub, eqV.getName(), "-", relV.getConst_value()));
             }
+            Var retV =  IRGenerator.genNewTemp();
             if (op.equals("!=")) {
                 /* TODO: Error ========== 0 ---> 0, others ---> 1*/
-                IRCodes.addIRCode_ori(new _6_Exp_Q(sub, "$0", "sltu", sub));
+                IRCodes.addIRCode_ori(new _6_Exp_Q(retV.getName(), "$0", "sltu", sub));
             } else {
-                IRCodes.addIRCode_ori(new _6_Exp_Q(sub, sub, "sltiu", 1));
+                IRCodes.addIRCode_ori(new _6_Exp_Q(retV.getName(), sub, "sltiu", 1));
             }
-            return subV;
+            return retV;
         }
         return null;
     }

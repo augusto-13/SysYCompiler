@@ -44,40 +44,6 @@ public class LOrExpNode extends Node {
             IRContext.jump_if = prev_jump_if;
             IRContext.else_label = prev_else_label;
             children.get(2).genIR();
-//            String prev_bnz_label = IRContext.bnz_label;
-//            String end_label = IRGenerator.genLabel();
-//            IRContext.bnz_label = end_label;
-//            Var orV = children.get(0).genIR();
-//            if (orV.isConst()) {
-//                if (orV.getConst_value() == 0) {
-//                    Var andV = children.get(2).genIR();
-//                    if (andV.isConst()) {
-//                        if (andV.getConst_value() == 0) {
-//                            IRCodes.addIRCode_ori(new _13_Jump_Q("goto", IRContext.bez_label));
-//                        }
-//                    }
-//                    else {
-//                        IRCodes.addIRCode_ori(new _13_Jump_Q("bez", andV.getName(), IRContext.bez_label));
-//                    }
-//                }
-//                else {
-//                    IRCodes.addIRCode_ori(new _13_Jump_Q("goto", end_label));
-//                }
-//            }
-//            else {
-//                IRCodes.addIRCode_ori(new _13_Jump_Q("bnz", orV.getName(), end_label));
-//                Var andV = children.get(2).genIR();
-//                if (andV.isConst()) {
-//                    if (andV.getConst_value() == 0) {
-//                        IRCodes.addIRCode_ori(new _13_Jump_Q("goto", IRContext.bez_label));
-//                    }
-//                }
-//                else {
-//                    IRCodes.addIRCode_ori(new _13_Jump_Q("bez", andV.getName(), IRContext.bez_label));
-//                }
-//            }
-//            IRCodes.addIRCode_ori(new _12_Label_Q(end_label));
-//            IRContext.bnz_label = prev_bnz_label;
         }
         return null;
     }

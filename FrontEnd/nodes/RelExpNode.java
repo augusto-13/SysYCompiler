@@ -3,9 +3,7 @@ package FrontEnd.nodes;
 import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
-import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
 import FrontEnd.IRGenerator.Quadruple._15_T_Assign_Q;
-import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
 
 import java.util.ArrayList;
@@ -32,6 +30,7 @@ public class RelExpNode extends Node {
             }
             Var resV = IRGenerator.genNewTemp();
             String res = resV.getName();
+            Var retV = IRGenerator.genNewTemp();
             switch (op) {
                 case "<":
                     if (addV.isConst()) {
@@ -68,8 +67,8 @@ public class RelExpNode extends Node {
                         }
                         IRCodes.addIRCode_ori(new _6_Exp_Q(res, rel, "slt", addV.getName()));
                     }
-                    IRCodes.addIRCode_ori(new _6_Exp_Q(res, res, "sltiu", 1));
-                    break;
+                    IRCodes.addIRCode_ori(new _6_Exp_Q(retV.getName(), res, "sltiu", 1));
+                    return retV;
                 default:
                     if (relV.isConst()) {
                         IRCodes.addIRCode_ori(new _6_Exp_Q(res, addV.getName(), "slti", relV.getConst_value()));
@@ -81,8 +80,8 @@ public class RelExpNode extends Node {
                         }
                         IRCodes.addIRCode_ori(new _6_Exp_Q(res, add, "slt", relV.getName()));
                     }
-                    IRCodes.addIRCode_ori(new _6_Exp_Q(res, res, "sltiu", 1));
-                    break;
+                    IRCodes.addIRCode_ori(new _6_Exp_Q(retV.getName(), res, "sltiu", 1));
+                    return retV;
             }
             return resV;
         }
