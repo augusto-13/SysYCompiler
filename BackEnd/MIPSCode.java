@@ -150,4 +150,19 @@ public abstract class MIPSCode {
             }
         }
     }
+
+    public static class Move extends MIPSCode {
+        int to;
+        int from;
+
+        public Move(int to, int from) {
+            this.to = to;
+            this.from = from;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("move $%d, $%d\n", to, from);
+        }
+    }
 }
