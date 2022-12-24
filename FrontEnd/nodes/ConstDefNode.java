@@ -5,7 +5,9 @@ import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRTbl.IRTbl;
 import FrontEnd.IRGenerator.IRTbl.Var_tbl;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
+import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
 import FrontEnd.IRGenerator.Quadruple._2_ArrDecl_Q;
+import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
 import FrontEnd.errorChecker.ErrorPair;
@@ -59,7 +61,11 @@ public class ConstDefNode extends Node {
             int d1 = const_init_value.getD1();
             int d2 = const_init_value.getD2();
             constVar = new Var("const", ident, dim, d1, d2, value_arr);
-            IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident, d2 == 0 ? d1 : d1 * d2, value_arr));
+            int d_t = (d2 == 0) ? d1 : d1 * d2;
+            IRCodes.addIRCode_ori(new _2_ArrDecl_Q(ident, d_t));
+            for (int i = 0; i < d_t; i++) {
+                IRCodes.addIRCode_ori(new _3_Assign_Q(new LVal(ident, i), value_arr.get(i)));
+            }
         }
         // 填表
         IRTbl.addEntry(new Var_tbl(identNode.getContent(), constVar));
