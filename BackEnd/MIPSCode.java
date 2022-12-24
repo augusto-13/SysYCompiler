@@ -74,20 +74,38 @@ public abstract class MIPSCode {
         }
     }
 
-    public static class LW extends MIPSCode {
-        int reg;
-        int imm;
-        int reg2;
+    public static class SW extends MIPSCode {
+        int from_reg;
+        int to_imm;
+        int to_r;
 
-        public LW(int reg, int imm, int reg2) {
-            this.reg = reg;
-            this.imm = imm;
-            this.reg2 = reg2;
+        public SW(int from_reg, int to_imm, int to_r) {
+            this.from_reg = from_reg;
+            this.to_imm = to_imm;
+            this.to_r = to_r;
         }
 
         @Override
         public String toString() {
-            return String.format("lw $%d, 0x%x($%d)\n", reg, imm, reg2);
+            return (to_imm <= 0) ? String.format("sw $%d, %d($%d)\n", from_reg, to_imm, to_r) :
+                    String.format("sw $%d, 0x%x($%d)\n", from_reg, to_imm, to_r);
+        }
+    }
+
+    public static class LW extends MIPSCode {
+        int to_reg;
+        int from_imm;
+        int from_r;
+
+        public LW(int to_reg, int from_imm, int from_r) {
+            this.to_reg = to_reg;
+            this.from_imm = from_imm;
+            this.from_r = from_r;
+        }
+
+        @Override
+        public String toString() {
+            return (from_imm <= 0) ? String.format("lw $%d, %d($%d)\n", to_reg, from_imm, from_r) : String.format("lw $%d, 0x%x($%d)\n", to_reg, from_imm, from_r);
         }
     }
 
@@ -142,11 +160,11 @@ public abstract class MIPSCode {
                 case "+":
                     return String.format("addiu $%d, $%d, %d\n", res, reg, imm);
                 case "-":
-                    return String.format("subiu $%d, $%d, %d\n", res, reg, imm);
+                    return String.format("addiu $%d, $%d, %d\n", res, reg, -imm);
                 case "<<":
                     return String.format("sll $%d, $%d, %d\n", res, reg, imm);
                 default:
-                    return String.format("%s $%d, $%d, %d\n", op, reg, imm, res);
+                    return String.format("%s $%d, $%d, %d\n", op, res, reg, imm);
             }
         }
     }
@@ -165,4 +183,73 @@ public abstract class MIPSCode {
             return String.format("move $%d, $%d\n", to, from);
         }
     }
+
+    public static class J extends MIPSCode {
+        String label;
+
+        public J(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("j %s\n", label);
+        }
+    }
+
+    public static class BEZ extends MIPSCode {
+        int reg;
+        String label;
+
+        public BEZ(int reg, String label) {
+            this.reg = reg;
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("beq $%d, $0, %s\n", reg, label);
+        }
+    }
+
+    public static class BNZ extends MIPSCode {
+        int reg;
+        String label;
+
+        public BNZ(int reg, String label) {
+            this.reg = reg;
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("bne $%d, $0, %s\n", reg, label);
+        }
+    }
+
+    public static class JAL extends MIPSCode {
+        String label;
+
+        public JAL(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("jal %s\n", label);
+        }
+    }
+
+    public static class JR extends MIPSCode {
+
+        public JR() {
+        }
+
+        @Override
+        public String toString() {
+            return "jr $ra\n";
+        }
+    }
+
+
 }

@@ -5,6 +5,8 @@ import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.IRTbl.IRTbl;
 import FrontEnd.IRGenerator.Quadruple._15_T_Assign_Q;
+import FrontEnd.IRGenerator.Quadruple._16_T_FuncCallRet_Q;
+import FrontEnd.IRGenerator.Quadruple._3_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
 import FrontEnd.IRGenerator.Quadruple._7_FuncCall_Q;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
@@ -131,7 +133,11 @@ public class UnaryExpNode extends Node {
             // if ret_void
             if (IRTbl.findFunc(ident).retVoid()) return null;
             // if ret_int
-            else return new Var("var", "RET");
+            else {
+                Var tempT = IRGenerator.genNewTemp();
+                IRCodes.addIRCode_ori(new _16_T_FuncCallRet_Q(tempT.getName()));
+                return tempT;
+            }
         }
         return null;
     }

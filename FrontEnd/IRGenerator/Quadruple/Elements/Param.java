@@ -1,10 +1,10 @@
 package FrontEnd.IRGenerator.Quadruple.Elements;
 
 public class Param {
-    boolean isArr;
-    String name;
-    boolean dim_is1;
-    int d2;
+    public boolean isArr;
+    public String name;
+    public boolean dim_is1;
+    public int d2;
 
     public Param(String name) {
         isArr = false;

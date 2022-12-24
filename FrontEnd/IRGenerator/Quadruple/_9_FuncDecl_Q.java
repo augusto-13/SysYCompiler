@@ -37,6 +37,9 @@ public class _9_FuncDecl_Q extends IRCode {
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
-        MIPSTbl.sp_offset = 0;
+        MIPSTbl.initNewFuncDecl();
+        for (Param param : params) {
+            MIPSTbl.func_paraName.add(param.name);
+        }
     }
 }

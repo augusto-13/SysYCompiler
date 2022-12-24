@@ -9,6 +9,9 @@ import FrontEnd.IRGenerator.Quadruple.Elements.PrintElem;
 
 import java.util.ArrayList;
 
+import static BackEnd.MIPSTbl.a0;
+import static BackEnd.MIPSTbl.v0;
+
 public class _11_Out_Q extends IRCode{
     ArrayList<PrintElem> outs = new ArrayList<>();
 
@@ -51,21 +54,42 @@ public class _11_Out_Q extends IRCode{
         for (PrintElem out : outs) {
             if (out.is_num) {
                 // print %d, 6
-                mips_text.add(new MIPSCode.LI(4, out.num));
-                mips_text.add(new MIPSCode.LI(2, 1));
+                mips_text.add(new MIPSCode.LI(a0, out.num));
+                mips_text.add(new MIPSCode.LI(v0, 1));
                 mips_text.add(new MIPSCode.Sys());
             }
             else if (out.is_var) {
-                // TODO
                 String var = out.var_name;
-                if (MIPSTbl.regOrMem_trueIfReg(var)) {
-
+                if (var.charAt(0) == 't') {
+                    mips_text.add(new MIPSCode.Move(a0, MIPSTbl.get_t_num(var)));
                 }
+                else if (var.charAt(0) == '@') {
+                    int g_addr = MIPSTbl.global_name2addr.get(var);
+                    mips_text.add(new MIPSCode.LW(a0, g_addr, 0));
+                }
+                else if (var.charAt(0) == '%') {
+                    if (MIPSTbl.regOrMem_trueIfReg(var)) {
+                        mips_text.add(new MIPSCode.Move(a0, MIPSTbl.get_s_num(var)));
+                    }
+                    else {
+                        int m_addr = MIPSTbl.main_name2addr.get(var);
+                        mips_text.add(new MIPSCode.LW(a0, m_addr, 0));
+                    }
+                }
+                else if (var.charAt(0) == '^' || var.charAt(0) == '!') {
+                    int sp_offset = (var.charAt(0) == '^') ? MIPSTbl.func_name2offset.get(var) : MIPSTbl.get_para_name_2_sp_offset(var);
+                    mips_text.add(new MIPSCode.LW(a0, sp_offset, MIPSTbl.sp));
+                }
+                else {
+                    System.out.println("Something's wrong with _11_Q!!!");
+                }
+                mips_text.add(new MIPSCode.LI(v0, 1));
+                mips_text.add(new MIPSCode.Sys());
             }
             else {
                 // print %s
-                mips_text.add(new MIPSCode.LA(4, out.str_name));
-                mips_text.add(new MIPSCode.LI(2, 4));
+                mips_text.add(new MIPSCode.LA(a0, out.str_name));
+                mips_text.add(new MIPSCode.LI(v0, 4));
                 mips_text.add(new MIPSCode.Sys());
             }
         }
