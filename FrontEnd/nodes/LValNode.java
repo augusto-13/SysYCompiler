@@ -4,10 +4,10 @@ import FrontEnd.IRGenerator.IRCodes;
 import FrontEnd.IRGenerator.IRContext;
 import FrontEnd.IRGenerator.IRGenerator;
 import FrontEnd.IRGenerator.IRTbl.IRTbl;
+import FrontEnd.IRGenerator.Quadruple._15_T_Assign_Q;
 import FrontEnd.IRGenerator.Quadruple._4_ArrGetVal_Q;
 import FrontEnd.IRGenerator.Quadruple._5_ArrGetAddr_Q;
 import FrontEnd.IRGenerator.Quadruple._6_Exp_Q;
-import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.IRGenerator.IRTbl.syms.Var;
 import FrontEnd.errorChecker.Context;
 import FrontEnd.errorChecker.ErrorKind;
@@ -86,8 +86,10 @@ public class LValNode extends Node {
                     int index = expV.getConst_value() * d2_len;
                     IRCodes.addIRCode_ori(new _5_ArrGetAddr_Q(temp.getName(), arrV.getName(), index));
                 } else {
+                    Var d2_lenV = IRGenerator.genNewTemp();
+                    IRCodes.addIRCode_ori(new _15_T_Assign_Q(d2_lenV.getName(), d2_len));
                     Var index = IRGenerator.genNewTemp();
-                    IRCodes.addIRCode_ori(new _6_Exp_Q(index.getName(), expV.getName(), "*", d2_len));
+                    IRCodes.addIRCode_ori(new _6_Exp_Q(index.getName(), expV.getName(), "*", d2_lenV.getName()));
                     IRCodes.addIRCode_ori(new _5_ArrGetAddr_Q(temp.getName(), arrV.getName(), index.getName()));
                 }
                 return temp;
@@ -122,8 +124,10 @@ public class LValNode extends Node {
                 } else return new Var("arr_val", arrV, 2, index);
             } else {
                 Var _1 = IRGenerator.genNewTemp();
+                Var d2_lenV = IRGenerator.genNewTemp();
                 Var index = IRGenerator.genNewTemp();
-                IRCodes.addIRCode_ori(new _6_Exp_Q(_1.getName(), index1_expV.getName(), "*", d2_len));
+                IRCodes.addIRCode_ori(new _15_T_Assign_Q(d2_lenV.getName(), d2_len));
+                IRCodes.addIRCode_ori(new _6_Exp_Q(_1.getName(), index1_expV.getName(), "*", d2_lenV.getName()));
                 if (index2_expV.isConst())
                     IRCodes.addIRCode_ori(new _6_Exp_Q(index.getName(), _1.getName(), "+", index2_expV.getConst_value()));
                 else IRCodes.addIRCode_ori(new _6_Exp_Q(index.getName(), _1.getName(), "+", index2_expV.getName()));

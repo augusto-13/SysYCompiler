@@ -14,8 +14,8 @@ public class MIPSTbl {
     public static final HashMap<String, Integer> main_name2addr = new HashMap<>();
     public static final HashMap<String, Integer> func_name2offset = new HashMap<>();
     public static final ArrayList<String> func_paraName = new ArrayList<>();
-    public static final int[] t_reg_nums = new int[] {3, 5, 6, 7};
-    public static final int[] s_reg_nums = new int[] {16, 17, 18, 19, 20, 21, 22, 23, 30, 8, 9, 10, 11, 12, 13, 14, 15, 24, 25, 26};
+    public static final int[] t_reg_nums = new int[] {3, 5, 6, 7, 16, 17, 18, 19, 20};
+    public static final int[] s_reg_nums = new int[] { 21, 22, 23, 30, 8, 9, 10, 11, 12, 13, 14, 15, 24, 25, 26};
     public static int sp_offset = 0;
     public static final int sp = 29;
     public static final int ra = 31;
