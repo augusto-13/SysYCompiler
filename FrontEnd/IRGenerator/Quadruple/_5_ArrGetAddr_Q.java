@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import static BackEnd.MIPSTbl.sp;
 import static BackEnd.MIPSTbl.t0;
+import static BackEnd.MIPSTbl.t1;
 
 public class _5_ArrGetAddr_Q extends IRCode {
     String temp;
@@ -60,7 +61,7 @@ public class _5_ArrGetAddr_Q extends IRCode {
             }
             else if (name.charAt(0) == '!') {
                 int sp_offset = MIPSTbl.get_para_name_2_sp_offset(name);
-                mips_text.add(new MIPSCode.Cal_RI(t_num, sp, "+", sp_offset));
+                mips_text.add(new MIPSCode.LW(t_num, sp_offset, sp));
             }
             else if (name.charAt(0) == '^') {
                 int sp_offset = MIPSTbl.func_name2offset.get(name);
@@ -82,6 +83,7 @@ public class _5_ArrGetAddr_Q extends IRCode {
             }
             else if (name.charAt(0) == '!') {
                 int sp_offset = MIPSTbl.get_para_name_2_sp_offset(name);
+                /*TODO*/
                 mips_text.add(new MIPSCode.Cal_RI(t_num, sp, "+", sp_offset + (o_val << 2)));
             }
             else if (name.charAt(0) == '^') {
@@ -140,8 +142,40 @@ public class _5_ArrGetAddr_Q extends IRCode {
                     System.out.println("Something's wrong with _5_Q <3>");
                 }
             }
-            else if (name.charAt(0) == '!' || name.charAt(0) == '^') {
-                int sp_offset = (name.charAt(0) == '!') ? MIPSTbl.get_para_name_2_sp_offset(name) : MIPSTbl.func_name2offset.get(name);
+            else if (name.charAt(0) == '!') {
+                int sp_offset = MIPSTbl.get_para_name_2_sp_offset(name);
+                mips_text.add(new MIPSCode.LW(t1, sp_offset, sp));
+                // mips_text.add(new MIPSCode.Cal_RI(t_num, sp, "+", sp_offset + (o_val << 2)));
+                // gist: 1) $t0 = o_var << 2
+                //       2) $t0 = $t0 + sp_offset
+                //       3) $t_num = $sp + $t0
+                if (o_var.charAt(0) == 't') {
+                    int t_num_in = MIPSTbl.get_t_num(o_var);
+                    mips_text.add(new MIPSCode.Cal_RI(t0, t_num_in, "<<", 2));
+                }
+                else if (o_var.charAt(0) == '@') {
+                    int g_addr_in = MIPSTbl.global_name2addr.get(o_var);
+                    mips_text.add(new MIPSCode.LW(t0, g_addr_in, 0));
+                    mips_text.add(new MIPSCode.Cal_RI(t0, t0, "<<", 2));
+                }
+                else if (o_var.charAt(0) == '!') {
+                    int sp_offset_in = MIPSTbl.get_para_name_2_sp_offset(o_var);
+                    mips_text.add(new MIPSCode.LW(t0, sp_offset_in, sp));
+                    mips_text.add(new MIPSCode.Cal_RI(t0, t0, "<<", 2));
+                }
+                else if (o_var. charAt(0) == '^') {
+                    int sp_offset_in = MIPSTbl.func_name2offset.get(o_var);
+                    mips_text.add(new MIPSCode.LW(t0, sp_offset_in, sp));
+                    mips_text.add(new MIPSCode.Cal_RI(t0, t0, "<<", 2));
+                }
+                else {
+                    System.out.println("Something's wrong with _5_Q <4>");
+                }
+                mips_text.add(new MIPSCode.Cal_RI(t0, t0, "+", t1));
+                mips_text.add(new MIPSCode.Cal_RR(t_num, sp, "+", t0));
+            }
+            else if (name.charAt(0) == '^') {
+                int sp_offset = MIPSTbl.func_name2offset.get(name);
                 // mips_text.add(new MIPSCode.Cal_RI(t_num, sp, "+", sp_offset + (o_val << 2)));
                 // gist: 1) $t0 = o_var << 2
                 //       2) $t0 = $t0 + sp_offset

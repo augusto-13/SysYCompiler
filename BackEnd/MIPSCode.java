@@ -14,7 +14,7 @@ public abstract class MIPSCode {
 
         @Override
         public String toString() {
-            return "li $" + reg + ", " + imm + "\n";
+            return String.format("li $%d, 0x%x\n", reg, imm);
         }
     }
 
