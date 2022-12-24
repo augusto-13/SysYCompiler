@@ -5,6 +5,8 @@ import BackEnd.MIPSCode;
 import BackEnd.MIPSTbl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static BackEnd.MIPSTbl.ra;
 import static BackEnd.MIPSTbl.sp;
@@ -37,17 +39,43 @@ public class _7_FuncCall_Q extends IRCode {
         //       4) jal
         //       5) $sp +=
         //       6) lw $ra, 0($sp)
-        mips_text.add(new MIPSCode.SW(ra, 0, sp));
-        int sp_offset = -4;
+        //       7) lw $_, -4 * k($sp)
+
+        // 1. 先将$ra压入栈中
+        mips_text.add(new MIPSCode.SW(ra, MIPSTbl.sp_offset, sp));
+        // 2-1. 趁tName2tNum表中信息尚未删除，将参数压栈
+        // 这里需要进行一步预计算：先计算出被占用临时变量数目k
+        // 初始化：sp_offset = -4 - 4 * k
+        ArrayList<MIPSCode> temp_mips_text = new ArrayList<>();
+        int sp_offset = MIPSTbl.sp_offset - 4 - 4 * MIPSTbl.tName2tNum.size();
         for (String arg : args) {
-            int arg_reg_num = getRegNum(arg, mips_text);
-            mips_text.add(new MIPSCode.SW(arg_reg_num, sp_offset, sp));
+            int arg_reg_num = getRegNum(arg, temp_mips_text);
+            temp_mips_text.add(new MIPSCode.SW(arg_reg_num, sp_offset, sp));
             sp_offset -= 4;
         }
+        // 2-2. 将临时变量寄存器值压入栈中
+        int _sp_offset = MIPSTbl.sp_offset - 4;
+        HashMap<String, Integer> t2push = MIPSTbl.t2push();
+        for (Map.Entry<String, Integer> t : t2push.entrySet()) {
+            mips_text.add(new MIPSCode.SW(t.getValue(), _sp_offset, sp));
+            _sp_offset -= 4;
+        }
+        mips_text.addAll(temp_mips_text);
+        // 3
         mips_text.add(new MIPSCode.Cal_RI(sp, sp, "-", -sp_offset));
+        // 4
         mips_text.add(new MIPSCode.JAL(name));
+        // 5
         mips_text.add(new MIPSCode.Cal_RI(sp, sp, "+", -sp_offset));
-        mips_text.add(new MIPSCode.LW(ra, 0, sp));
+        // 6
+        mips_text.add(new MIPSCode.LW(ra, MIPSTbl.sp_offset, sp));
+        // 7
+        MIPSTbl.restoreAll_t(t2push);
+        sp_offset = MIPSTbl.sp_offset - 4;
+        for (Map.Entry<String, Integer> t : t2push.entrySet()) {
+            mips_text.add(new MIPSCode.LW(t.getValue(), sp_offset, sp));
+            sp_offset -= 4;
+        }
     }
 
     private int getRegNum(String var, ArrayList<MIPSCode> mips_text) {

@@ -4,6 +4,7 @@ import FrontEnd.IRGenerator.Quadruple.IRCode;
 import FrontEnd.IRGenerator.Quadruple._14_StrDecl_Q;
 import FrontEnd.IRGenerator.Quadruple._1_VarDecl_Q;
 import FrontEnd.IRGenerator.Quadruple._2_ArrDecl_Q;
+import FrontEnd.IRGenerator.Quadruple._8_FuncRet_Q;
 
 import java.util.ArrayList;
 
@@ -29,6 +30,10 @@ public class IRCodes {
     }
 
     public static void merge_curr_func_into_irCodes_func() {
+        int size = irCodes_curr_func.size();
+        if ((irCodes_curr_func.get(size - 2)) instanceof _8_FuncRet_Q) {
+            irCodes_curr_func.remove(size - 1);
+        }
         irCodes_func.add(irCodes_curr_func);
     }
 

@@ -208,14 +208,6 @@ public class Var {
         return name;
     }
 
-    // isConst
-    // UnaryExp → UnaryOp(-)
-    /* TODO==构建"DAG"图时需要特别注意这步操作 */
-    public void negative() {
-        assert isConst;
-        const_value = -const_value;
-    }
-
     // getter methods
     public int getD1() {
         return d1;

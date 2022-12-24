@@ -1,7 +1,10 @@
 package BackEnd;
 
+import sun.util.resources.cldr.zh.CalendarData_zh_Hans_HK;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MIPSTbl {
 
@@ -53,12 +56,26 @@ public class MIPSTbl {
     private static boolean isTemp(String name) {
         return name.charAt(0) == 't';
     }
+
     public static boolean allocate_s_reg(String name) {
         if (used_s_reg >= total_s_reg) return false;
         sName2sNum.put(name, s_reg_nums[used_s_reg]);
         used_s_reg++;
         return true;
     }
+
+    public static boolean regOrMem_trueIfReg(String name) {
+        // 临时变量
+        if (isTemp(name)) return true;
+        // 已分配寄存器
+        else if (sName2sNum.containsKey(name)) return true;
+        return false;
+    }
+
+    public static int get_s_num(String name) {
+        return sName2sNum.get(name);
+    }
+
     public static int allocate_t_reg(String name) {
         for (Integer i : t2occupied.keySet()) {
             if (!t2occupied.get(i)) {
@@ -71,23 +88,12 @@ public class MIPSTbl {
         System.out.println("Something's wrong with t_reg allocation!");
         return -1;
     }
-    public static boolean regOrMem_trueIfReg(String name) {
-        // 临时变量
-        if (isTemp(name)) return true;
-        // 已分配寄存器
-        else if (sName2sNum.containsKey(name)) return true;
-        return false;
-    }
 
     public static int get_t_num(String name) {
         int ret_reg_num = tName2tNum.get(name);
         release_t(name);
         System.out.println(ret_reg_num + " is released!!!");
         return ret_reg_num;
-    }
-
-    public static int get_s_num(String name) {
-        return sName2sNum.get(name);
     }
 
     public static void release_t(String name) {
@@ -98,6 +104,21 @@ public class MIPSTbl {
         }
     }
 
+    public static HashMap<String, Integer> t2push() {
+        HashMap<String, Integer> ret = new HashMap<>();
+        for (Map.Entry<String, Integer> tName_tNum : tName2tNum.entrySet()) {
+            ret.put(tName_tNum.getKey(), tName_tNum.getValue());
+            t2occupied.put(tName_tNum.getValue(), false);
+        }
+        tName2tNum.clear();
+        return ret;
+    }
 
+    public static void restoreAll_t(HashMap<String, Integer> tMap) {
+        for (Map.Entry<String, Integer> tName_tNum : tMap.entrySet()) {
+            t2occupied.put(tName_tNum.getValue(), true);
+            tName2tNum.put(tName_tNum.getKey(), tName_tNum.getValue());
+        }
+    }
 
 }

@@ -90,8 +90,8 @@ public class UnaryExpNode extends Node {
                     return IRGenerator.genConstTemp(-unaryV.getValidInitVal());
                 }
                 else if (unaryV.isConst()) {
-                    unaryV.negative();
-                    return unaryV;
+                    Var newV = IRGenerator.genConstTemp(-unaryV.getConst_value());
+                    return newV;
                 }
                 else {
                     Var res = IRGenerator.genNewTemp();
