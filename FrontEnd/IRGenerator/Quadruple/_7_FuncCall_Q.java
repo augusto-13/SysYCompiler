@@ -31,6 +31,7 @@ public class _7_FuncCall_Q extends IRCode {
         return ret.toString();
     }
 
+    // OK???
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
         // gist: 1) sw $ra, 0($sp)
@@ -47,7 +48,7 @@ public class _7_FuncCall_Q extends IRCode {
         // 这里需要进行一步预计算：先计算出被占用临时变量数目k
         // 初始化：sp_offset = -4 - 4 * k
         ArrayList<MIPSCode> temp_mips_text = new ArrayList<>();
-        int sp_offset = MIPSTbl.sp_offset - 4 - 4 * MIPSTbl.tName2tNum.size();
+        int sp_offset = MIPSTbl.sp_offset - 4 - 4 * MIPSTbl.tName2tNum.size() - 4 * MIPSTbl.tName2tAddr.size();
         for (String arg : args) {
             int arg_reg_num = getRegNum(arg, temp_mips_text);
             temp_mips_text.add(new MIPSCode.SW(arg_reg_num, sp_offset, sp));
@@ -55,9 +56,15 @@ public class _7_FuncCall_Q extends IRCode {
         }
         // 2-2. 将临时变量寄存器值压入栈中
         int _sp_offset = MIPSTbl.sp_offset - 4;
-        HashMap<String, Integer> t2push = MIPSTbl.t2push();
-        for (Map.Entry<String, Integer> t : t2push.entrySet()) {
+        HashMap<String, Integer> tNum2push = MIPSTbl.tNum2push();
+        for (Map.Entry<String, Integer> t : tNum2push.entrySet()) {
             mips_text.add(new MIPSCode.SW(t.getValue(), _sp_offset, sp));
+            _sp_offset -= 4;
+        }
+        HashMap<String, Integer> tAddr2push = MIPSTbl.tAddr2push();
+        for (Map.Entry<String, Integer> t : tAddr2push.entrySet()) {
+            mips_text.add(new MIPSCode.LW(t0, t.getValue(), 0));
+            mips_text.add(new MIPSCode.SW(t0, _sp_offset, sp));
             _sp_offset -= 4;
         }
         mips_text.addAll(temp_mips_text);
@@ -70,17 +77,30 @@ public class _7_FuncCall_Q extends IRCode {
         // 6
         mips_text.add(new MIPSCode.LW(ra, MIPSTbl.sp_offset, sp));
         // 7
-        MIPSTbl.restoreAll_t(t2push);
+        MIPSTbl.restoreAll_tNum(tNum2push);
+        MIPSTbl.restoreAll_tAddr(tAddr2push);
         sp_offset = MIPSTbl.sp_offset - 4;
-        for (Map.Entry<String, Integer> t : t2push.entrySet()) {
+        for (Map.Entry<String, Integer> t : tNum2push.entrySet()) {
             mips_text.add(new MIPSCode.LW(t.getValue(), sp_offset, sp));
+            sp_offset -= 4;
+        }
+        for (Map.Entry<String, Integer> t : tAddr2push.entrySet()) {
+            mips_text.add(new MIPSCode.LW(t0, sp_offset, sp));
+            mips_text.add(new MIPSCode.SW(t0, t.getValue(), 0));
             sp_offset -= 4;
         }
     }
 
     private int getRegNum(String var, ArrayList<MIPSCode> mips_text) {
         if (var.charAt(0) == 't') {
-            return MIPSTbl.get_t_num(var);
+            if (MIPSTbl.regOrMem_trueIfReg(var)) {
+                return MIPSTbl.get_t_num(var);
+            }
+            else {
+                int t_addr = MIPSTbl.get_t_addr(var);
+                mips_text.add(new MIPSCode.LW(t0, t_addr, 0));
+                return t0;
+            }
         }
         else if (var.charAt(0) == '@') {
             int g_addr = MIPSTbl.global_name2addr.get(var);

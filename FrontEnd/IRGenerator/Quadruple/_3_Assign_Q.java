@@ -11,12 +11,12 @@ import static BackEnd.MIPSTbl.*;
 public class _3_Assign_Q extends IRCode {
     LVal left;
     boolean R_isVal;
-    String right_var;
+    String var;
     int right_val;
 
     public _3_Assign_Q(LVal l, String r) {
         left = l;
-        right_var = r;
+        var = r;
         R_isVal = false;
     }
 
@@ -28,9 +28,10 @@ public class _3_Assign_Q extends IRCode {
 
     @Override
     public String toString() {
-        return R_isVal ? String.format("%s = %d\n", left, right_val) : String.format("%s = %s\n", left, right_var);
+        return R_isVal ? String.format("%s = %d\n", left, right_val) : String.format("%s = %s\n", left, var);
     }
 
+    // OK!!!
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
         // 特殊处理：可能分配了寄存器的'%_'变量
@@ -117,22 +118,28 @@ public class _3_Assign_Q extends IRCode {
             mips_text.add(new MIPSCode.LI(t1, right_val));
             return t1;
         } else {
-            if (right_var.charAt(0) == 't') {
-                return MIPSTbl.get_t_num(right_var);
-            } else if (right_var.charAt(0) == '@') {
-                int g_addr = MIPSTbl.global_name2addr.get(right_var);
+            if (var.charAt(0) == 't') {
+                int t_num = MIPSTbl.get_t_num(var);
+                if (t_num == -1) {
+                    int t_addr = MIPSTbl.get_t_addr(var);
+                    mips_text.add(new MIPSCode.LW(t1, t_addr, 0));
+                    return t1;
+                }
+                else return t_num;
+            } else if (var.charAt(0) == '@') {
+                int g_addr = MIPSTbl.global_name2addr.get(var);
                 mips_text.add(new MIPSCode.LW(t1, g_addr, 0));
                 return t1;
-            } else if (right_var.charAt(0) == '%') {
-                if (MIPSTbl.regOrMem_trueIfReg(right_var)) {
-                    return MIPSTbl.get_s_num(right_var);
+            } else if (var.charAt(0) == '%') {
+                if (MIPSTbl.regOrMem_trueIfReg(var)) {
+                    return MIPSTbl.get_s_num(var);
                 } else {
-                    int m_addr = MIPSTbl.main_name2addr.get(right_var);
+                    int m_addr = MIPSTbl.main_name2addr.get(var);
                     mips_text.add(new MIPSCode.LW(t1, m_addr, 0));
                     return t1;
                 }
-            } else if (right_var.charAt(0) == '^' || right_var.charAt(0) == '!') {
-                int sp_offset = (right_var.charAt(0) == '^') ? MIPSTbl.func_name2offset.get(right_var) : MIPSTbl.get_para_name_2_sp_offset(right_var);
+            } else if (var.charAt(0) == '^' || var.charAt(0) == '!') {
+                int sp_offset = (var.charAt(0) == '^') ? MIPSTbl.func_name2offset.get(var) : MIPSTbl.get_para_name_2_sp_offset(var);
                 mips_text.add(new MIPSCode.LW(t1, sp_offset, MIPSTbl.sp));
                 return t1;
             } else {
@@ -144,7 +151,13 @@ public class _3_Assign_Q extends IRCode {
 
     private int getRegNum(String var, ArrayList<MIPSCode> mips_text) {
         if (var.charAt(0) == 't') {
-            return MIPSTbl.get_t_num(var);
+            int t_num = MIPSTbl.get_t_num(var);
+            if (t_num == -1) {
+                int t_addr = MIPSTbl.get_t_addr(var);
+                mips_text.add(new MIPSCode.LW(t0, t_addr, 0));
+                return t0;
+            }
+            else return t_num;
         } else if (var.charAt(0) == '@') {
             int g_addr = MIPSTbl.global_name2addr.get(var);
             mips_text.add(new MIPSCode.LW(t0, g_addr, 0));

@@ -51,6 +51,7 @@ public class _11_Out_Q extends IRCode{
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
+        // OK!!!
         for (PrintElem out : outs) {
             if (out.is_num) {
                 // print %d, 6
@@ -61,7 +62,13 @@ public class _11_Out_Q extends IRCode{
             else if (out.is_var) {
                 String var = out.var_name;
                 if (var.charAt(0) == 't') {
-                    mips_text.add(new MIPSCode.Move(a0, MIPSTbl.get_t_num(var)));
+                    if (MIPSTbl.regOrMem_trueIfReg(var)) {
+                        mips_text.add(new MIPSCode.Move(a0, MIPSTbl.get_t_num(var)));
+                    }
+                    else {
+                        int t_addr = MIPSTbl.get_t_addr(var);
+                        mips_text.add(new MIPSCode.LW(a0, t_addr, 0));
+                    }
                 }
                 else if (var.charAt(0) == '@') {
                     int g_addr = MIPSTbl.global_name2addr.get(var);

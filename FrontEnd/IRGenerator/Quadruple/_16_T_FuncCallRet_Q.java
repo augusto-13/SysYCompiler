@@ -17,14 +17,21 @@ public class _16_T_FuncCallRet_Q extends IRCode {
 
     @Override
     public String toString() {
-        return String.format("%s = RET\n", temp);
+        return (!release) ? String.format("%s = RET\n", temp) : "";
     }
 
+    // OK!!!
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
         if (!release) {
             int t_num = MIPSTbl.allocate_t_reg(temp);
-            mips_text.add(new MIPSCode.Move(t_num, v0));
+            if (t_num != -1) {
+                mips_text.add(new MIPSCode.Move(t_num, v0));
+            }
+            else {
+                int t_addr = MIPSTbl.allocate_t_addr(temp);
+                mips_text.add(new MIPSCode.SW(v0, t_addr, 0));
+            }
         }
     }
 

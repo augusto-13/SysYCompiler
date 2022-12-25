@@ -11,6 +11,7 @@ public class _12_Label_Q extends IRCode {
         this.name = name;
     }
 
+    // OK!!!
     @Override
     public String toString() {
         return name + ":\n";

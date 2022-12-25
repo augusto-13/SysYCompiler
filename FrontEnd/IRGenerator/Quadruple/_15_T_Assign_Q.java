@@ -5,6 +5,8 @@ import BackEnd.MIPSTbl;
 
 import java.util.ArrayList;
 
+import static BackEnd.MIPSTbl.t0;
+
 public class _15_T_Assign_Q extends IRCode {
     String t_left;
     int right_val;
@@ -15,16 +17,24 @@ public class _15_T_Assign_Q extends IRCode {
         this.right_val = right_val;
     }
 
+    // OK!!!
     @Override
     public String toString() {
-        return String.format("%s = %d\n", t_left, right_val);
+        return (!release) ? String.format("%s = %d\n", t_left, right_val) : "";
     }
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
         if (!release) {
             int t_num = MIPSTbl.allocate_t_reg(t_left);
-            mips_text.add(new MIPSCode.LI(t_num, right_val));
+            if (t_num != -1) {
+                mips_text.add(new MIPSCode.LI(t_num, right_val));
+            }
+            else {
+                int t_addr = MIPSTbl.allocate_t_addr(t_left);
+                mips_text.add(new MIPSCode.LI(t0, right_val));
+                mips_text.add(new MIPSCode.SW(t0, t_addr, 0));
+            }
         }
     }
 

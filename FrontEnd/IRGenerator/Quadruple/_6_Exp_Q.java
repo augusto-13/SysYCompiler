@@ -5,8 +5,11 @@ import BackEnd.MIPSTbl;
 
 import java.util.ArrayList;
 
+import static BackEnd.MIPSTbl.allocate_t_addr;
+import static BackEnd.MIPSTbl.get_t_addr;
 import static BackEnd.MIPSTbl.t0;
 import static BackEnd.MIPSTbl.t1;
+import static BackEnd.MIPSTbl.t2;
 
 
 public class _6_Exp_Q extends IRCode {
@@ -43,26 +46,53 @@ public class _6_Exp_Q extends IRCode {
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
+        // Yes!!!
         int res_num = MIPSTbl.allocate_t_reg(res);
         int arg1_reg_num = getRegNum(arg1, t0, mips_text);
-        if (isImm) {
-            if (op.equals("slti") && !isConst16(imm)) {
-                mips_text.add(new MIPSCode.LI(t1, imm));
-                mips_text.add(new MIPSCode.Cal_RR(res_num, arg1_reg_num, "slt", t1));
-                if (release) MIPSTbl.release_t(res);
-                return;
+        if (res_num != -1) {
+            if (isImm) {
+                if (op.equals("slti") && !isConst16(imm)) {
+                    mips_text.add(new MIPSCode.LI(t1, imm));
+                    mips_text.add(new MIPSCode.Cal_RR(res_num, arg1_reg_num, "slt", t1));
+                    if (release) MIPSTbl.release_t(res);
+                    return;
+                }
+                mips_text.add(new MIPSCode.Cal_RI(res_num, arg1_reg_num, op, imm));
+            } else {
+                int arg2_reg_num = getRegNum(arg2, t1, mips_text);
+                mips_text.add(new MIPSCode.Cal_RR(res_num, arg1_reg_num, op, arg2_reg_num));
             }
-            mips_text.add(new MIPSCode.Cal_RI(res_num, arg1_reg_num, op, imm));
-        } else {
-            int arg2_reg_num = getRegNum(arg2, t1, mips_text);
-            mips_text.add(new MIPSCode.Cal_RR(res_num, arg1_reg_num, op, arg2_reg_num));
+        }
+        else {
+            int res_addr = allocate_t_addr(res);
+            if (isImm) {
+                if (op.equals("slti") && !isConst16(imm)) {
+                    mips_text.add(new MIPSCode.LI(t1, imm));
+                    mips_text.add(new MIPSCode.Cal_RR(t1, arg1_reg_num, "slt", t1));
+                    mips_text.add(new MIPSCode.SW(t1, res_addr, 0));
+                    if (release) MIPSTbl.release_t(res);
+                    return;
+                }
+                mips_text.add(new MIPSCode.Cal_RI(t1, arg1_reg_num, op, imm));
+                mips_text.add(new MIPSCode.SW(t1, res_addr, 0));
+            } else {
+                int arg2_reg_num = getRegNum(arg2, t1, mips_text);
+                mips_text.add(new MIPSCode.Cal_RR(t0, arg1_reg_num, op, arg2_reg_num));
+                mips_text.add(new MIPSCode.SW(t0, res_addr, 0));
+            }
         }
         if (release) MIPSTbl.release_t(res);
     }
 
     private int getRegNum(String var, int target_num, ArrayList<MIPSCode> mips_text) {
         if (var.charAt(0) == 't') {
-            return MIPSTbl.get_t_num(var);
+            if (MIPSTbl.regOrMem_trueIfReg(var)) {
+                return MIPSTbl.get_t_num(var);
+            } else {
+                int t_addr = MIPSTbl.tName2tAddr.get(var);
+                mips_text.add(new MIPSCode.LW(target_num, t_addr, 0));
+                return target_num;
+            }
         } else if (var.charAt(0) == '@') {
             int g_addr = MIPSTbl.global_name2addr.get(var);
             mips_text.add(new MIPSCode.LW(target_num, g_addr, 0));

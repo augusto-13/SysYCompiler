@@ -32,6 +32,7 @@ public class _2_ArrDecl_Q extends IRCode {
         return ret.toString();
     }
 
+    // OK!!!
     @Override
     public void toData(StringBuilder mips_data) {
         if (global_initVal.isEmpty()) {

@@ -68,7 +68,7 @@ public class MIPSTbl {
 
     public static boolean regOrMem_trueIfReg(String name) {
         // 临时变量
-        if (isTemp(name)) return true;
+        if (tName2tNum.containsKey(name)) return true;
         // 已分配寄存器
         else if (sName2sNum.containsKey(name)) return true;
         return false;
@@ -100,7 +100,7 @@ public class MIPSTbl {
             }
             t_allocated_addrs.add(t_addr);
             tName2tAddr.put(name, t_addr);
-            String.format("0x%x is allocated!!!");
+            System.out.println(String.format("0x%x is allocated!!!", t_addr));
             return t_addr;
         }
     }
@@ -119,7 +119,7 @@ public class MIPSTbl {
     public static int get_t_addr(String name) {
         int ret_addr = tName2tAddr.get(name);
         release_t(name);
-        String.format("0x%x is free for other t's!!!");
+        System.out.println(String.format("0x%x is free for other t's!!!"));
         return ret_addr;
     }
 
@@ -138,7 +138,7 @@ public class MIPSTbl {
         }
     }
 
-    public static HashMap<String, Integer> t2push() {
+    public static HashMap<String, Integer> tNum2push() {
         HashMap<String, Integer> ret = new HashMap<>();
         for (Map.Entry<String, Integer> tName_tNum : tName2tNum.entrySet()) {
             ret.put(tName_tNum.getKey(), tName_tNum.getValue());
@@ -148,10 +148,25 @@ public class MIPSTbl {
         return ret;
     }
 
-    public static void restoreAll_t(HashMap<String, Integer> tMap) {
+    public static HashMap<String, Integer> tAddr2push() {
+        HashMap<String, Integer> ret = new HashMap<>();
+        ret.putAll(tName2tAddr);
+        tName2tAddr.clear();
+        t_allocated_addrs.clear();
+        return ret;
+    }
+
+    public static void restoreAll_tNum(HashMap<String, Integer> tMap) {
         for (Map.Entry<String, Integer> tName_tNum : tMap.entrySet()) {
             t2occupied.put(tName_tNum.getValue(), true);
             tName2tNum.put(tName_tNum.getKey(), tName_tNum.getValue());
+        }
+    }
+
+    public static void restoreAll_tAddr(HashMap<String, Integer> tMap) {
+        for (Map.Entry<String, Integer> tName_tAddr : tMap.entrySet()) {
+            tName2tAddr.put(tName_tAddr.getKey(), tName_tAddr.getValue());
+            t_allocated_addrs.add(tName_tAddr.getValue());
         }
     }
 

@@ -36,6 +36,7 @@ public class _8_FuncRet_Q extends IRCode {
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
+        // OK!!!
         if (type.equals("func")) {
             if (!ret_void) {
                 if (ret_isVal) {
@@ -43,7 +44,13 @@ public class _8_FuncRet_Q extends IRCode {
                 }
                 else {
                     if (ret_var.charAt(0) == 't') {
-                        mips_text.add(new MIPSCode.Move(v0, MIPSTbl.get_t_num(ret_var)));
+                        if (MIPSTbl.regOrMem_trueIfReg(ret_var)) {
+                            mips_text.add(new MIPSCode.Move(v0, MIPSTbl.get_t_num(ret_var)));
+                        }
+                        else {
+                            int t_addr = MIPSTbl.get_t_addr(ret_var);
+                            mips_text.add(new MIPSCode.LW(v0, t_addr, 0));
+                        }
                     }
                     else if (ret_var.charAt(0) == '@') {
                         int g_addr = MIPSTbl.global_name2addr.get(ret_var);

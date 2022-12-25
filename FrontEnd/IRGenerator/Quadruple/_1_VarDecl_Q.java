@@ -35,6 +35,7 @@ public class _1_VarDecl_Q extends IRCode {
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
+        // OK!!!
         if (type.equals("main")) {
             if (MIPSTbl.allocate_s_reg(name)) return;
             MIPSTbl.main_name2addr.put(name, MIPSTbl.main_var_address);

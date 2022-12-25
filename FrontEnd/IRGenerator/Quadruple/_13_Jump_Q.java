@@ -36,6 +36,7 @@ public class _13_Jump_Q extends IRCode {
         arg = a;
     }
 
+    // OK!!!
     @Override
     public String toString() {
         return type == 0 ? String.format("goto %s\n", label) : String.format("%s %s %s\n", type_int2str.get(type), arg, label);
@@ -49,7 +50,14 @@ public class _13_Jump_Q extends IRCode {
         else {
             // gist: 将arg存入寄存器
             if (arg.charAt(0) == 't') {
-                write(MIPSTbl.get_t_num(arg), mips_text);
+                if (MIPSTbl.regOrMem_trueIfReg(arg)) {
+                    write(MIPSTbl.get_t_num(arg), mips_text);
+                }
+                else {
+                    int t_addr = MIPSTbl.get_t_addr(arg);
+                    mips_text.add(new MIPSCode.LW(MIPSTbl.t0, t_addr, 0));
+                    write(MIPSTbl.t0, mips_text);
+                }
             }
             else if (arg.charAt(0) == '@') {
                 int g_addr = MIPSTbl.global_name2addr.get(arg);

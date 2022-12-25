@@ -11,6 +11,7 @@ public class _14_StrDecl_Q extends IRCode {
         this.content = content;
     }
 
+    // OK!!!
     @Override
     public String toString() {
         return String.format("const str %s = \"%s\"\n", name, content);
