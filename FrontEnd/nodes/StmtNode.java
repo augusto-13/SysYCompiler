@@ -110,7 +110,17 @@ public class StmtNode extends Node {
             }
         } else if (first instanceof ExpNode) {
             // Stmt -> Exp ';'
+            // 关键在于这里可能会产生未被使用的临时变量
+            // 可以尝试检查一下，该条规则产生的最后一条语句是否为对临时变量的赋值语句
+            // 1) 在 `IRContext` 中加入统计该条规则产生语句数量的继承/综合属性
+            // 2) 若语句数不为0，检查最后一条语句是否为对t的赋值(6/15/16)，如果是，手动release一下下。
+            IRContext.single_exp_stmt_new_Q_num = 0;
+            IRContext.in_single_exp_stmt = true;
             first.genIR();
+            IRContext.in_single_exp_stmt = false;
+            if (IRContext.single_exp_stmt_new_Q_num != 0) {
+                IRCodes.latest_IRCode.release_t();
+            }
         } else if (first instanceof BlockNode) {
             // Stmt -> Block
             IRTbl.newFrame(IRTbl.FRAME_BLOCK, "block" + (++IRGenerator.block_num));

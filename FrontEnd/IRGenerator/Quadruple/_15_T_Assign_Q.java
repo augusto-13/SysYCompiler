@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class _15_T_Assign_Q extends IRCode {
     String t_left;
     int right_val;
+    boolean release = false;
 
     public _15_T_Assign_Q(String t_left, int right_val) {
         this.t_left = t_left;
@@ -21,7 +22,14 @@ public class _15_T_Assign_Q extends IRCode {
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
-        int t_num = MIPSTbl.allocate_t_reg(t_left);
-        mips_text.add(new MIPSCode.LI(t_num, right_val));
+        if (!release) {
+            int t_num = MIPSTbl.allocate_t_reg(t_left);
+            mips_text.add(new MIPSCode.LI(t_num, right_val));
+        }
+    }
+
+    @Override
+    public void release_t() {
+        release = true;
     }
 }

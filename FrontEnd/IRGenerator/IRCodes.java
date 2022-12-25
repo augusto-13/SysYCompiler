@@ -17,12 +17,15 @@ public class IRCodes {
     public static final ArrayList<IRCode> irCodes_global_decl = new ArrayList<>();
     public static final ArrayList<IRCode> irCodes_global_str = new ArrayList<>();
     public static final ArrayList<IRCode> irCodes_opt = new ArrayList<>();
+    public static IRCode latest_IRCode;
 
     public static void addIRCode_ori(IRCode code) {
+        if (IRContext.in_single_exp_stmt) IRContext.single_exp_stmt_new_Q_num++;
         if (IRContext.global_decl && (code instanceof _1_VarDecl_Q || code instanceof _2_ArrDecl_Q)) irCodes_global_decl.add(code);
         else if (code instanceof _14_StrDecl_Q) irCodes_global_str.add(code);
         else if (IRContext.in_func) irCodes_curr_func.add(code);
         else irCodes_main.add(code);
+        latest_IRCode = code;
     }
 
     public static void init_irCodes_curr_func() {

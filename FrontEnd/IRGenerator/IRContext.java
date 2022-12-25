@@ -13,4 +13,6 @@ public class IRContext {
     public static String else_label;
     public static String continue_label;
     public static String break_label;
+    public static boolean in_single_exp_stmt;
+    public static int single_exp_stmt_new_Q_num;
 }

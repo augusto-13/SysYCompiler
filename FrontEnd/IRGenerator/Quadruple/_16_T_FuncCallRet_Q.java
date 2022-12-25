@@ -9,6 +9,7 @@ import static BackEnd.MIPSTbl.v0;
 
 public class _16_T_FuncCallRet_Q extends IRCode {
     String temp;
+    boolean release = false;
 
     public _16_T_FuncCallRet_Q(String temp) {
         this.temp = temp;
@@ -21,7 +22,14 @@ public class _16_T_FuncCallRet_Q extends IRCode {
 
     @Override
     public void toText(String type, ArrayList<MIPSCode> mips_text) {
-        int t_num = MIPSTbl.allocate_t_reg(temp);
-        mips_text.add(new MIPSCode.Move(t_num, v0));
+        if (!release) {
+            int t_num = MIPSTbl.allocate_t_reg(temp);
+            mips_text.add(new MIPSCode.Move(t_num, v0));
+        }
+    }
+
+    @Override
+    public void release_t() {
+        release = true;
     }
 }

@@ -1,7 +1,4 @@
 package BackEnd;
-
-import sun.util.resources.cldr.zh.CalendarData_zh_Hans_HK;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,17 +11,18 @@ public class MIPSTbl {
     public static final HashMap<String, Integer> main_name2addr = new HashMap<>();
     public static final HashMap<String, Integer> func_name2offset = new HashMap<>();
     public static final ArrayList<String> func_paraName = new ArrayList<>();
-    public static final int[] t_reg_nums = new int[] {3, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23};
-    public static final int[] s_reg_nums = new int[] {30, 8, 9, 10, 11, 12, 13, 14, 15, 24, 25};
-    public static int sp_offset = 0;
-    public static final int sp = 29;
-    public static final int ra = 31;
+    public static final int[] t_reg_nums = new int[] {3, 5, 6, 7, 16, 17, 18, 19, 8, 20, 21, 22, 23, 24, };
+    public static final int[] s_reg_nums = new int[] {9, 10, 11, 12, 13, 14, 15, 25, 30};
+    public static final int ZERO = 0;
+    public static final int AT = 1;
     public static final int v0 = 2;
     public static final int a0 = 4;
-    public static final int t0 = 27;
-    public static final int t1 = 28;
-    public static final int t2 = 26;
-
+    public static final int t0 = 26;
+    public static final int t1 = 27;
+    public static final int t2 = 28;
+    public static final int sp = 29;
+    public static final int ra = 31;
+    public static int sp_offset = 0;
 
 
     private static final int total_s_reg = s_reg_nums.length;
@@ -54,6 +52,8 @@ public class MIPSTbl {
         }
     };
     public static final HashMap<String, Integer> tName2tNum = new HashMap<>();
+    public static final HashMap<String, Integer> tName2tAddr = new HashMap<>();
+    public static final ArrayList<Integer> t_allocated_addrs = new ArrayList<>();
     public static final HashMap<String, Integer> sName2sNum = new HashMap<>();
     private static boolean isTemp(String name) {
         return name.charAt(0) == 't';
@@ -91,18 +91,50 @@ public class MIPSTbl {
         return -1;
     }
 
+    public static int allocate_t_addr(String name) {
+        int t_addr = global_address;
+        while (true) {
+            if (t_allocated_addrs.contains(t_addr)) {
+                t_addr += 4;
+                continue;
+            }
+            t_allocated_addrs.add(t_addr);
+            tName2tAddr.put(name, t_addr);
+            String.format("0x%x is allocated!!!");
+            return t_addr;
+        }
+    }
+
     public static int get_t_num(String name) {
-        int ret_reg_num = tName2tNum.get(name);
+        if (tName2tNum.containsKey(name)) {
+            int ret_reg_num = tName2tNum.get(name);
+            release_t(name);
+            System.out.println(ret_reg_num + " is released!!!");
+            return ret_reg_num;
+        } else {
+            return -1;
+        }
+    }
+
+    public static int get_t_addr(String name) {
+        int ret_addr = tName2tAddr.get(name);
         release_t(name);
-        System.out.println(ret_reg_num + " is released!!!");
-        return ret_reg_num;
+        String.format("0x%x is free for other t's!!!");
+        return ret_addr;
     }
 
     public static void release_t(String name) {
         if (name.charAt(0) == 't') {
-            int t_num = tName2tNum.get(name);
-            tName2tNum.remove(name);
-            t2occupied.put(t_num, false);
+            if (tName2tNum.containsKey(name)) {
+                int t_num = tName2tNum.get(name);
+                tName2tNum.remove(name);
+                t2occupied.put(t_num, false);
+            }
+            else {
+                int t_addr = tName2tAddr.get(name);
+                tName2tAddr.remove(name);
+                t_allocated_addrs.remove(t_addr);
+            }
         }
     }
 

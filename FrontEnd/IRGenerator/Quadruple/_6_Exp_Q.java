@@ -17,6 +17,7 @@ public class _6_Exp_Q extends IRCode {
     private final boolean isImm;
     private String arg2;
     private int imm;
+    private boolean release = false;
 
 
     public _6_Exp_Q(String r, String a1, String o, String a2) {
@@ -45,11 +46,18 @@ public class _6_Exp_Q extends IRCode {
         int res_num = MIPSTbl.allocate_t_reg(res);
         int arg1_reg_num = getRegNum(arg1, t0, mips_text);
         if (isImm) {
+            if (op.equals("slti") && !isConst16(imm)) {
+                mips_text.add(new MIPSCode.LI(t1, imm));
+                mips_text.add(new MIPSCode.Cal_RR(res_num, arg1_reg_num, "slt", t1));
+                if (release) MIPSTbl.release_t(res);
+                return;
+            }
             mips_text.add(new MIPSCode.Cal_RI(res_num, arg1_reg_num, op, imm));
         } else {
             int arg2_reg_num = getRegNum(arg2, t1, mips_text);
             mips_text.add(new MIPSCode.Cal_RR(res_num, arg1_reg_num, op, arg2_reg_num));
         }
+        if (release) MIPSTbl.release_t(res);
     }
 
     private int getRegNum(String var, int target_num, ArrayList<MIPSCode> mips_text) {
@@ -80,4 +88,12 @@ public class _6_Exp_Q extends IRCode {
         }
     }
 
+    private boolean isConst16(int i) {
+        return (i <= ((1 << 15) - 1)) && (i >= (-(1 << 15)));
+    }
+
+    @Override
+    public void release_t() {
+        release = true;
+    }
 }
