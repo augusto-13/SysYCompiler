@@ -64,9 +64,10 @@ public class StmtNode extends Node {
                 Context.addError(new ErrorPair(ErrorKind.ABUSE_BREAK_CONTINUE, children.get(0).getFinishLine()));
             }
         } else if (firstKind == SyntaxKind.L_VAL) {
-            Context.lValInStmt = true;
+            boolean prev_lVal_left = Context.lVal_left;
+            Context.lVal_left = true;
             children.get(0).checkError();
-            Context.lValInStmt = false;
+            Context.lVal_left = prev_lVal_left;
             for (int i = 1; i < children.size(); i++) {
                 children.get(i).checkError();
             }

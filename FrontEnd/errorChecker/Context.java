@@ -14,7 +14,7 @@ public class Context {
     public static int inLoopNum = 0;
     public static boolean funcBlock = false;
     public static int inFuncType = NOT;
-    public static boolean lValInStmt = false;
+    public static boolean lVal_left = false;
 
     public static Stack<HashMap<String, SymbolInfo>> symT = new Stack<>();
     public static HashMap<String, Stack<Integer>> content2levels = new HashMap<>();

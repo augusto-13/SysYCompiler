@@ -27,12 +27,15 @@ public class LValNode extends Node {
             Context.addError(new ErrorPair(ErrorKind.UNDEFINED_IDENT, identNode.getFinishLine()));
             return;
         }
-        if (Context.lValInStmt && Context.checkModifyConstError(name)) {
+        if (Context.lVal_left && Context.checkModifyConstError(name)) {
             Context.addError(new ErrorPair(ErrorKind.MODIFY_CONST, identNode.getFinishLine()));
         }
+        boolean prev_lVal_left = Context.lVal_left;
+        Context.lVal_left = false;
         for (Node child : getChildren()) {
             child.checkError();
         }
+        Context.lVal_left = prev_lVal_left;
     }
 
     @Override

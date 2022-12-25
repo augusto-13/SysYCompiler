@@ -6,15 +6,7 @@ import FrontEnd.IRGenerator.Quadruple.Elements.LVal;
 
 import java.util.ArrayList;
 
-import static BackEnd.MIPSTbl.func_name2offset;
-import static BackEnd.MIPSTbl.get_para_name_2_sp_offset;
-import static BackEnd.MIPSTbl.get_s_num;
-import static BackEnd.MIPSTbl.global_name2addr;
-import static BackEnd.MIPSTbl.main_name2addr;
-import static BackEnd.MIPSTbl.regOrMem_trueIfReg;
-import static BackEnd.MIPSTbl.sp;
-import static BackEnd.MIPSTbl.t0;
-import static BackEnd.MIPSTbl.t1;
+import static BackEnd.MIPSTbl.*;
 
 public class _3_Assign_Q extends IRCode {
     LVal left;
@@ -79,9 +71,13 @@ public class _3_Assign_Q extends IRCode {
             } else if (lName.charAt(0) == '%') {
                 int m_addr = main_name2addr.get(lName);
                 mips_text.add(new MIPSCode.SW(r_reg_num, m_addr + (l_in << 2), 0));
-            } else if (lName.charAt(0) == '!' || lName.charAt(0) == '^') {
-                int sp_offset = (lName.charAt(0) == '!') ? get_para_name_2_sp_offset(lName) : func_name2offset.get(lName);
-                mips_text.add(new MIPSCode.SW(r_reg_num, sp_offset + (l_in << 2), sp));
+            } else if (lName.charAt(0) == '!') {
+                int sp_offset = get_para_name_2_sp_offset(lName);
+                mips_text.add(new MIPSCode.LW(t0, sp_offset, sp));
+                mips_text.add(new MIPSCode.SW(r_reg_num, l_in << 2, t0));
+            } else if (lName.charAt(0) == '^') {
+                int sp_offset = func_name2offset.get(lName);
+                mips_text.add(new MIPSCode.SW(r_reg_num, (l_in << 2) + sp_offset, sp));
             } else {
                 System.out.println("Something's wrong with _3_Q!!! <3>");
             }
@@ -96,8 +92,17 @@ public class _3_Assign_Q extends IRCode {
                 int m_addr = main_name2addr.get(lName);
                 mips_text.add(new MIPSCode.Cal_RI(t0, l_in_reg_num, "<<", 2));
                 mips_text.add(new MIPSCode.SW(r_reg_num, m_addr, t0));
-            } else if (lName.charAt(0) == '!' || lName.charAt(0) == '^') {
-                int sp_offset = (lName.charAt(0) == '!') ? get_para_name_2_sp_offset(lName) : func_name2offset.get(lName);
+            } else if (lName.charAt(0) == '!') {
+                // t1: r_reg_num占用
+                // t0: l_in_reg可能占用 (l_in_reg << 2 结果可以用t0存储)
+                // t2: 使用LW后获取的地址
+                int sp_offset = get_para_name_2_sp_offset(lName);
+                mips_text.add(new MIPSCode.LW(t2, sp_offset, sp));
+                mips_text.add(new MIPSCode.Cal_RI(t0, l_in_reg_num, "<<", 2));
+                mips_text.add(new MIPSCode.Cal_RR(t0, t0, "+", t2));
+                mips_text.add(new MIPSCode.SW(r_reg_num, 0, t0));
+            } else if (lName.charAt(0) == '^') {
+                int sp_offset = func_name2offset.get(lName);
                 mips_text.add(new MIPSCode.Cal_RI(t0, l_in_reg_num, "<<", 2));
                 mips_text.add(new MIPSCode.Cal_RR(t0, t0, "+", sp));
                 mips_text.add(new MIPSCode.SW(r_reg_num, sp_offset, t0));
@@ -140,28 +145,23 @@ public class _3_Assign_Q extends IRCode {
     private int getRegNum(String var, ArrayList<MIPSCode> mips_text) {
         if (var.charAt(0) == 't') {
             return MIPSTbl.get_t_num(var);
-        }
-        else if (var.charAt(0) == '@') {
+        } else if (var.charAt(0) == '@') {
             int g_addr = MIPSTbl.global_name2addr.get(var);
             mips_text.add(new MIPSCode.LW(t0, g_addr, 0));
             return t0;
-        }
-        else if (var.charAt(0) == '%') {
+        } else if (var.charAt(0) == '%') {
             if (MIPSTbl.regOrMem_trueIfReg(var)) {
                 return MIPSTbl.get_s_num(var);
-            }
-            else {
+            } else {
                 int m_addr = MIPSTbl.main_name2addr.get(var);
                 mips_text.add(new MIPSCode.LW(t0, m_addr, 0));
                 return t0;
             }
-        }
-        else if (var.charAt(0) == '^' || var.charAt(0) == '!') {
+        } else if (var.charAt(0) == '^' || var.charAt(0) == '!') {
             int sp_offset = (var.charAt(0) == '^') ? MIPSTbl.func_name2offset.get(var) : MIPSTbl.get_para_name_2_sp_offset(var);
             mips_text.add(new MIPSCode.LW(t0, sp_offset, MIPSTbl.sp));
             return t0;
-        }
-        else {
+        } else {
             System.out.println("Something's wrong with _3_Q!!!");
             return -1;
         }
