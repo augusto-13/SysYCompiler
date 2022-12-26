@@ -431,7 +431,7 @@ public class _4_ArrGetVal_Q extends IRCode {
                 mips_text.add(new MIPSCode.LW(t0, nameAddr_sp_offset, MIPSTbl.sp));
                 if (o_isVal) {
                     mips_text.add(new MIPSCode.LW(t0, o_val << 2, t0));
-                    mips_text.add(new MIPSCode.SW(t0, t0, 0));
+                    mips_text.add(new MIPSCode.SW(t0, t_addr, 0));
                 }
                 else {
                     if (o_var.charAt(0) == 't') {

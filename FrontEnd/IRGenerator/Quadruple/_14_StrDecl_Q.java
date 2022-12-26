@@ -1,6 +1,8 @@
 package FrontEnd.IRGenerator.Quadruple;
 
 
+import BackEnd.MIPSTbl;
+
 public class _14_StrDecl_Q extends IRCode {
 
     String name;
@@ -20,5 +22,16 @@ public class _14_StrDecl_Q extends IRCode {
     @Override
     public void toData(StringBuilder mips_data) {
         mips_data.append(String.format("%s: .asciiz \"%s\"\n", name, content));
+        MIPSTbl.global_address += (toLength() + 1);
+    }
+
+    private int toLength() {
+        int l = 0;
+        for (int i = 0; i < content.length(); i++) {
+            if (content.charAt(i) == '\\') i++;
+            l++;
+        }
+        return l;
     }
 }
+

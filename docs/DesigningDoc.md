@@ -1,22 +1,96 @@
-# 设计文档
-## 1. FrontEnd
+# 设计文档 [20373493-李逸卓]
+
+## 1. FrontEnd<前端>
+
+### 概述：
+
+前端共分为四大部分：
+
++ 词法分析(`lexer`)
++ 语法分析(`parser`)
++ 静态错误检查(`errorChecker`)
++ 中间代码生成(`IRGenerator`)
+
+代码文件结构如下：
+
+![image-20221225195806476](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20221225195806476.png)
+
+其中，`nodes`是在语法分析阶段建立起的语法树的节点，后面的错误处理与中间代码生成均是通过对语法树的遍历（对每个节点调用一个泛化的方法[`checkError()`/`genIR()`]）来实现。
+
+各包内子结构将在下方逐个介绍，窃以为除了一个编译器内建了三遍的符号表ShitMountain以外，总体架构还算精巧。
+
+`Compiler.java`中前端的运行逻辑如下：
+
+```
+if (level < 1 || level > 5) {
+            System.out.println("Illegal level value");
+            return;
+        }
+        // level 1: FrontEnd.lexer
+        File in = new File("testfile.txt");
+        File out = new File("output.txt");
+        init(out);
+        FileSource fileSrc = new FileSource(in);
+        Lexer lexer = new Lexer(fileSrc);
+        ArrayList<Token> tokens = lexer.tokenize();
+        if (lexer.hasError()) {
+            lexer.printError();
+            return;
+        }
+        if (level == 1) return;
+
+        // level 2: FrontEnd.parser
+        TokenSource tokenSrc = new TokenSource(tokens);
+        Parser parser = new Parser(tokenSrc);
+        root = parser.parse();
+        root.printTo(out);
+        if (level == 2) return;
+
+        // level 3: FrontEnd.errorHandler
+        File err = new File("error.txt");
+        init(err);
+        ErrorHandler errorHandler = new ErrorHandler(root, err);
+        if (errorHandler.hasError()) {
+            System.out.println("There's something wrong with your code.\nPlease check \"error.txt\".\nStop at level 3.");
+            noError = false;
+            return;
+        }
+        if (level == 3) return;
+
+        // level 4: irGeneration
+        File ir = new File("20373493_李逸卓_优化前中间代码.txt");
+        init(ir);
+        IRGenerator irGenerator = new IRGenerator(root);
+        irGenerator.printTo(ir);
+        if (level == 4) return;
+
+        // level 5: irOptimization
+        File ir_ = new File("20373493_李逸卓_优化后中间代码.txt");
+        init(ir_);
+        IROptimizer irOptimizer = new IROptimizer();
+        irOptimizer.printTo(ir_);
+```
+
 ### A. Lexer
+
+使用`Lexer`类完成，内部设计较为复杂，当时参考了一位学长的设计，有种“为了面向对象而面向对象的嫌疑”。
+
 ### B. Parser
+
+表达式是左递归文法，这里需要对其进行转化。但转化后的语法会让同一级表达式从右往左计算，`1-1-1`变成了 `1-(1-1)=0`。这时，需要能将某个节点插在当前节点上方。这里的操作比较神奇。在进入二元运算一开始，就先记录 `children` 的 `size`。在进入函数时，不记录当前 `children` 栈的大小，而是前面说的，其父节点函数记录的 `children` 的 `size`。这样，在这个节点 `finishNode` 时，自然而然就将比右运算早入栈的左运算划为了其子节点。
+
 ### C. Static Type-checking (Error Handling)
+
+这部分的重点在于符号表设计与上下文信息的传递。
+
+上下文信息使用`Context.java`进行装载，其内部所有属性均为`public`类，各节点均可见。
+
 ### D. Intermediate Representation Generation
-#### 1. `FrontEnd`内部结构重新梳理
-+ `<package> lexer` `(词法分析器)`
-+ `<package> parser` `(语法分析器)`
-+ `<package> errorChecker` `(错误处理器[静态类型检查])`
-+ `<package> nodes` `(抽象语法树[AST]节点)`
-+ `<package> IRGenerator` `(中间表示生成器)`
-  + `<package> IRTbl` `(中间结构符号表[主要用于常量的处理])`
-  + `<package> Quadruple` `(四元式结构)`
-  + `<class> IRCodes` `(四元式列表)`
-  + `<class> IRGenerator` `(中间表示生成器，起与"后端_Backend"、"抽象语法树节点_nodes"以及"中间结构优化器[IROptimizer]"交互的作用)`
-  + `<class> IROptimizer` **(Not implemented yet)**
-#### 2. 总体执行流
-+ 
+
+我的`IR`设计分为以下`16`类：
+
+![image-20221225233204464](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20221225233204464.png)
+
 ## 2. BackEnd
 ### 2-1. 为中间代码填坑
 #### 2-1-1. 全局声明
@@ -72,7 +146,7 @@
 | $ra             | 31     | Y    | 函数调用时跳转指令保存返回指令位置                           |
 
 
-```java
+```
 int[] tmp_regs = {3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 24, 25, 26, 27, 28};
 int[] globalregs = {16, 17, 18, 19, 20, 21, 22, 23};
 private HashMap<Integer, Boolean> regpool = new HashMap<>();
@@ -152,13 +226,14 @@ private HashMap<Integer, Sym> tmpreg2sym = new HashMap<>(); //3 5-15 24-28
        // 不会用到$ra
        // $ra ---> +(4k+4)
        // 就是找个位置存一下
-       para1 ---> +(4k)
-       para2 ---> +(4k-4)
+       para_0 ---> +(4k)
+       para_1 ---> +(4k-4)
        .
        .
        .
-       para k-1 ---> +(8)
-       para k ---> +(4)
+       para_k-2 ---> +(8)
+       para_k-1 ---> +(4)
+       <(k - i) * 4>
        ```
 
 ##### D. 函数声明中，变量声明的处理[-]
@@ -170,77 +245,57 @@ private HashMap<Integer, Sym> tmpreg2sym = new HashMap<>(); //3 5-15 24-28
   + 存储
   + `-4`
 
-##### 
+### 2-3. 指令的装载
 
-
-
-#### 函数调用
-
-普通函数的传参采用直接`push`参数到栈指针内的方式，并不断减小，同时将需要的寄存器值和返回地址也存入，在调用完函数之后，再退栈，将寄存器值和返回地址存入相应的寄存器。普通数字变量传参采用直接将值`push`进栈，对于数组变量采用`push`地址进栈，返回值用`$v0`保存，将其赋值给需要的寄存器即可。例子如下
-
-```asm
-sw $31 0($sp) #先压入31号返回地址寄存器
-li $3 0x0
-addi $3 $3 0x1001001c
-sw $3 -4($sp) #压入数组参数
-li $5 0xc
-addi $5 $5 0x10040000
-sw $5 -8($sp) #压入数组参数
-subi $sp $sp 12 #栈空间压缩
-jal funcAA
-addi $sp $sp 12 #退栈，栈空间回收
-lw $31 0($sp) #恢复31号寄存器值
-move $6 $2 #将$v0的值给需要的寄存器
-sw $6 0x10040018($0)
-lw $3 0x10040018($0)
 ```
+public abstract class MIPSCode {
 
-#### 一般的代码翻译
+    public static class LI extends MIPSCode {...}
 
-设计了一个工具类`Namespace`，类似`enum`枚举变量，保存数字，寄存器，标签，根据`type`属性区分。方便归一管理和操作。每一个`MipsCode`子类都使用了`Namespace`类作为自己的属性来导出代码。
+    public static class Label extends MIPSCode {...}
 
-对于一般的表达式，定义函数`lsym2ns` `rsym2ns` `rsym2ns2`三个函数，目的是将前端的`Sym`类转换成后端的`ns`类，一般是寄存器形式，从而方便进行代码生成，将`sym`转换为`namaspace`之后，就可以很方便的使用`MIPS`指令进行后续操作。具体转换方法是，针对前端标记好的不同形式的变量，比如`% @ t &`等不同的开头符号，确定相应的`Sym`的语义类型。临时变量`t`将其与寄存器建立联系，并返回寄存器。定义的变量则先从内存中`load`出来数据到寄存器中再返回。遇到被分配了寄存器的变量则直接返回相应的寄存器。
+    public static class Enter extends MIPSCode {...}
 
-对于其他的代码，也是类似，先利用`sym2ns`系列的函数，将前端的每个中间代码中的`Sym`类利用符号表和一定的规则转换为相应的寄存器变量或者数字变量，让后端在输出时可以很好的输出。
+    public static class LA extends MIPSCode {...}
 
-#### 后端符号表
+    public static class SW extends MIPSCode {...}
 
-后端也复用了前端中间代码生成阶段的符号表，并在前端符号表内加入了地址和一些标记变量易于处理。
+    public static class LW extends MIPSCode {...}
 
-具体划分区域使用前端标记好的`Label`进行区分，每次到了新的一层，即检测到`Label`字符串符合某种格式比如`block_func`开头，`block_main`开头，`block_`开头，就进行相应的处理，比如在符号表内创建新的`Block`，或者删除符号表指针。
+    public static class Cal_RR extends MIPSCode {...}
 
-#### 寄存器分配
+    public static class Cal_RI extends MIPSCode {...}
 
-此处仅讨论临时寄存器分配，全局寄存器分配见下一部分的图着色介绍。
+    public static class Move extends MIPSCode {...}
 
-本次作业我们能够使用的寄存器有`3,5-28`号，其他的均需要使用。其中临时寄存器是`3,5-15,24-28`
+    public static class J extends MIPSCode {...}
 
-```java
-int[] tmpregs = {3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 24, 25, 26, 27, 28};
-int[] globalregs = {16, 17, 18, 19, 20, 21, 22, 23};
-private HashMap<Integer, Boolean> regpool = new HashMap<>();
-private HashMap<Integer, Sym> globalreg2sym = new HashMap<>(); //16-23
-private HashMap<Integer, Sym> tmpreg2sym = new HashMap<>(); //3 5-15 24-28
-```
+    public static class BEZ extends MIPSCode {...}
 
-临时寄存器采用`FIFO`策略，先来先使用，每条语句结束之后会先检查哪些寄存器使用了但是没有与变量关联（即没用），或者与变量关联了但是这个变量之后无用了（即出口处不活跃且这条语句是最后被使用的），将这些无用寄存器先置为空闲。设计了一个`getReg`方法。即如果有空闲的，直接用。没有空闲的，寻找有无没有和某个变量联系的寄存器，有，则使用这个。如果还没有，就直接使用第一个寄存器。
+    public static class BNZ extends MIPSCode {...}
 
-```java
-private Namespace getReg() {
-    for (int reg : tmpregs) {
-        if (!regpool.get(reg) && !tmpreg2sym.containsKey(reg)) {
-            regpool.put(reg, true);
-            return new Namespace(reg, 0);
-        }
-    }
-    for (int reg : tmpregs) {
-        if (!tmpreg2sym.containsKey(reg)) {
-            regpool.put(reg, true);
-            return new Namespace(reg, 0);
-        }
-    }
-    return new Namespace(tmpregs[0], 0);
+    public static class JAL extends MIPSCode {...}
+
+    public static class JR extends MIPSCode {...}
+
+
 }
 ```
 
-每解析完一个函数，释放所有的临时寄存器和全局寄存器。每开始解析一个函数，设置相应的全局寄存器信息。
+使用了这样的一个巧妙的**内部静态类**的形式来进行指令装载。
+
+## 结尾
+
+
+
+> 编译第一次实验课PPT上往届学长的感想分享中的一句话让人记忆犹新：“想，都是问题，做，才是答案。”
+>
+> 1. 有一些问题，从纯理论的角度理解起来往往是困难的；还有些时候，你以为自己理解了某个概念的本质，但实际上你仅仅只是认识了皮毛。
+>    举一个最经典的例子：语法制导翻译SDT。
+>    SDT从文法的角度来分析，其实就是在普通文法序列中插入“动作符号”形成动作序列，如果单单从书中给的例子上去理解，这个概念是比较简单的、并且容易理解的；但是从这里直接过渡到手搓一个编译器中端，在实际操作时，至少我是一头雾水，因为从文法改写角度理解的SDT虽然直观却难以操作。
+>    而在实际操作中，我们往往会在Parser阶段构建一棵语法树，对节点进行遍历操作，在遍历的过程中来进行一系列的操作与计算。写中间代码生成的时候大概明白自己在做什么，在即将写完的时候我才理解了“语法树”的操作模式与SDT之间的联系：
+>    语法树中父节点与各子节点间是推导式左侧与右侧的关系；兄弟节点刚好组成一个推导式右部的符号序列。而我们在遍历语法树的过程中(e.g. A → aBc)，对A节点调用genIR()【中间代码生成，一个method】的内容是，分别对a, B, c三个子节点递归调用同一函数，并在三次调用之间进行某些操作，从而在某个上下文语境中实现我们的目的。而这和“文法改写”SDT的本质是一致的，在某特定语境下进行特定的操作达成目的。
+> 2. 有一些困难，凭空去想往往只会越想越难。动手去写了，困难才有了迎刃而解的可能。
+>    我的个人经历很可以说明问题了，代码生成一作业因为迟迟想不出一个合适的架构，迟迟没有动笔，再加上当时自己比较忙，所以错过了ddl没有交上。代码生成二也是如此，因为迟迟怯于动笔，硬是把完成时间拖到了DDL当天。这段时间的经历告诉我：“写中间代码的时候思考后端可能遇到的困难，写后端时想优化可能遇到的问题”是一个非常不健康的习惯。专注于眼前的挑战，一点点解决问题、战胜困难而不是被未来的困难吓住是一个很值得培养的品质。
+>
+> 时间限制就写这些吧，去de竞速排序的bug了（悲
