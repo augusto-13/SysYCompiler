@@ -204,7 +204,15 @@ public class Parser {
         }
         if (currKind() == SyntaxKind.ASSIGN) {
             checkToken(SyntaxKind.ASSIGN);
-            InitVal_16();
+            if (currKind() == SyntaxKind.GETINT_TK) {
+                checkToken(SyntaxKind.GETINT_TK);
+                checkToken(SyntaxKind.LPARENT);
+                checkToken(SyntaxKind.RPARENT);
+                checkToken(SyntaxKind.SEMICN);
+            }
+            else {
+                InitVal_16();
+            }
         }
         builder.finishNode(new VarDefNode());
     }
@@ -402,11 +410,9 @@ public class Parser {
         builder.startNode(SyntaxKind.MUL_EXP);
         UnaryExp_23();
         builder.finishNode(new MulExpNode());
-        while (currKind() == SyntaxKind.MULT || currKind() == SyntaxKind.DIVIDE || currKind() == SyntaxKind.MOD) {
+        while (currKind() == SyntaxKind.MULT || currKind() == SyntaxKind.DIVIDE || currKind() == SyntaxKind.MOD || currKind() == SyntaxKind.BIT_AND) {
             builder.startNodeAt(point, SyntaxKind.MUL_EXP);
-            if (currKind() == SyntaxKind.MULT) checkToken(SyntaxKind.MULT);
-            else if (currKind() == SyntaxKind.DIVIDE) checkToken(SyntaxKind.DIVIDE);
-            else checkToken(SyntaxKind.MOD);
+            checkToken(currKind());
             UnaryExp_23();
             builder.finishNode(new MulExpNode());
         }

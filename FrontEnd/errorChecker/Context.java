@@ -23,16 +23,23 @@ public class Context {
 
     public final static ArrayList<ErrorPair> errorList = new ArrayList<>();
 
+    // CompUnitNode中调用，初始化符号表
     public static void init() {
         currLevel = 0;
         symT.push(new HashMap<>());
     }
 
+    // 三个大结构单元新建Scope, 并更新currLevel
     public static void newScope() {
         symT.push(new HashMap<>());
         currLevel++;
     }
 
+    // content2levels记录标识符与嵌套层数的对应关系
+    // 因为存在重名情况，层数信息以栈的形式进行存储
+    // 清除当前域：
+    // 1. 更新content2levels的信息
+    // 2. ST退栈
     public static void clearCurrScope() {
         for (String content : symT.peek().keySet()) {
             content2levels.get(content).pop();
@@ -43,22 +50,27 @@ public class Context {
         currLevel--;
     }
 
+    // 增加新的符号
     public static void addSymbol(String name, int type) {
         symT.peek().put(name, (new SymbolInfo(type)));
         if (!content2levels.containsKey(name)) content2levels.put(name, new Stack<>());
         content2levels.get(name).push(currLevel);
     }
 
+
+    //
     public static void addSymbol_func(String name, int type, ArrayList<Integer> argTypes) {
         symT.peek().put(name, (new SymbolInfo(type, argTypes)));
         if (!content2levels.containsKey(name)) content2levels.put(name, new Stack<>());
         content2levels.get(name).push(currLevel);
     }
 
+    // 增加错误
     public static void addError(ErrorPair pair) {
         errorList.add(pair);
     }
 
+    //
     public static void addToParamStack(int paramDim) {
         funcParamDimStack.add(paramDim);
     }

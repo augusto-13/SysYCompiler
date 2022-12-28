@@ -35,6 +35,7 @@ public enum SyntaxKind {
     MULT("MULT"),
     DIVIDE("DIV"),
     MOD("MOD"),
+    BIT_AND("BITAND"),
 
     LT("LSS"),
     LE("LEQ"),

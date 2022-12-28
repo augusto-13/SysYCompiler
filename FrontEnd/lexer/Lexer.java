@@ -106,13 +106,15 @@ public class Lexer {
                         cursor.bump();
                     }
                     return SyntaxKind.INT_CONST;
-                } else if (isIdentFirst(first)) {
+                }
+                else if (isIdentFirst(first)) {
                     while (isIdentLetter(cursor.curr())) {
                         cursor.bump();
                     }
                     int end = cursor.lengthConsumed();
                     String ident = "";
                     for(;start < end; start++) ident += src.getNthChar(start);
+                    if (ident.equals("bitand")) return SyntaxKind.BIT_AND;
                     return SyntaxKind.string2kind.getOrDefault(ident, SyntaxKind.IDENT);
                 } else return SyntaxKind.ERROR;
         }
